@@ -8,9 +8,19 @@
 #+begin_src bash
 cp /home/kim/Dropbox/org-roam/20230715112804-ma_config_emacs.org /home/kim/Documents/useful_stuff_depot/config_emacs.org
 cd /home/kim/Documents/useful_stuff_depot
-git add config_emacs.org
 git commit -m "modifs"
+xterm -e MDP github_token
 #+end_src
+
+#+RESULTS:
+| Sur           | la           | branche          | master        |         |          |     |               |           |      |            |         |          |        |      |
+| Modifications | qui          | ne               | seront        | pas     | validées | :   |               |           |      |            |         |          |        |      |
+| (utilisez     | "git         | add              | <fichier>..." | pour    | mettre   | à   | jour          | ce        | qui  | sera       | validé) |          |        |      |
+| (utilisez     | "git         | restore          | <fichier>..." | pour    | annuler  | les | modifications | dans      | le   | répertoire | de      | travail) |        |      |
+|               | modifié :    | config_emacs.org |               |         |          |     |               |           |      |            |         |          |        |      |
+|               |              |                  |               |         |          |     |               |           |      |            |         |          |        |      |
+| aucune        | modification | n'a              | été           | ajoutée | à        | la  | validation    | (utilisez | "git | add"       | ou      | "git     | commit | -a") |
+
 
 
 [[id:e6c6a960-259e-4467-9900-5873f6ea1ec0][Emacs]]
@@ -90,10 +100,9 @@ PERMET DE NE PAS AVOIR A INSTALLER LES PACKAGES MANUELLEMENT (ultra puissant)
     (org-mode . undo-tree-mode)
     )
 
-  (setq undo-tree-visualizer-diff t) 
+  (setq undo-tree-visualizer-diff t)
   (setq undo-tree-history-directory-alist
         '(("." . "/home/kim/Dropbox/org-roam/undo_trees")))
-  )
 
 ;; Un hook permet d'activer un truc dans un mode bien précis
 ;; Par ex, ici j'active le focus mode à chq fois que je lance org mode

@@ -3,23 +3,15 @@
 :END:
 #+title: Ma config emacs
 
-
 **** SAUVER la config emacs:
 #+begin_src bash
 cp /home/kim/Dropbox/org-roam/20230715112804-ma_config_emacs.org /home/kim/Documents/useful_stuff_depot/config_emacs.org
 cd /home/kim/Documents/useful_stuff_depot
-git commit -m "modifs"
-xterm -e MDP github_token
+xterm -e git commit 
+gnome-terminal
 #+end_src
 
 #+RESULTS:
-| Sur           | la           | branche          | master        |         |          |     |               |           |      |            |         |          |        |      |
-| Modifications | qui          | ne               | seront        | pas     | validées | :   |               |           |      |            |         |          |        |      |
-| (utilisez     | "git         | add              | <fichier>..." | pour    | mettre   | à   | jour          | ce        | qui  | sera       | validé) |          |        |      |
-| (utilisez     | "git         | restore          | <fichier>..." | pour    | annuler  | les | modifications | dans      | le   | répertoire | de      | travail) |        |      |
-|               | modifié :    | config_emacs.org |               |         |          |     |               |           |      |            |         |          |        |      |
-|               |              |                  |               |         |          |     |               |           |      |            |         |          |        |      |
-| aucune        | modification | n'a              | été           | ajoutée | à        | la  | validation    | (utilisez | "git | add"       | ou      | "git     | commit | -a") |
 
 
 
@@ -975,3 +967,21 @@ C-c C-K (elpy-shell-kill-all)
     )
   ;;(add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
 #+end_src
+* Ressources emacs
+:PROPERTIES:
+:ID:       9aeb5f45-672f-4ca0-b199-c900285adc30
+:END:
+** [[https://www.labri.fr/perso/nrougier/GTD/index.html][nrougier]]
+:PROPERTIES:
+:ID:       ce2802bb-b973-4780-93cc-684519c24a39
+:END:
+*** org mode links and capture
+:PROPERTIES:
+:ID:       73cb7d26-9bbf-4729-b184-86fe986c966b
+:END:
+https://www.djcbsoftware.nl/code/mu/mu4e/Org_002dmode-links.html
+* AUtres
+#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
+(prefer-coding-system 'utf-8)
+#+end_src
+

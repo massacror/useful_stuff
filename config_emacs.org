@@ -7,8 +7,8 @@
 #+begin_src bash
 cp /home/kim/Dropbox/org-roam/20230715112804-ma_config_emacs.org /home/kim/Documents/useful_stuff_depot/config_emacs.org
 cd /home/kim/Documents/useful_stuff_depot
-xterm -e git commit 
-gnome-terminal
+xterm -e git commit -a
+gnome-terminal -- /bin/sh -c "git push; exec bash"
 #+end_src
 
 #+RESULTS:

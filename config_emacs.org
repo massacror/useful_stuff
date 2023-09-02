@@ -3,17 +3,13 @@
 :END:
 #+title: Ma config emacs
 
-**** SAUVER la config emacs:
+**** SAUVER la config emacs: [[id:f3f18585-dc83-4248-bb39-27b20587ff0b][Dépot useful stuff]]
 #+begin_src bash
 cp /home/kim/Dropbox/org-roam/20230715112804-ma_config_emacs.org /home/kim/Documents/useful_stuff_depot/config_emacs.org
 cd /home/kim/Documents/useful_stuff_depot
 xterm -e git commit -a
 gnome-terminal -- /bin/sh -c "git push; exec bash"
 #+end_src
-
-#+RESULTS:
-
-
 
 [[id:e6c6a960-259e-4467-9900-5873f6ea1ec0][Emacs]]
 [[/home/kim/.emacs::258][.EMACS]]
@@ -51,7 +47,8 @@ PERMET DE NE PAS AVOIR A INSTALLER LES PACKAGES MANUELLEMENT (ultra puissant)
 #+end_src
 
 *** [[id:5a09cf74-c575-4bb4-be55-617ad7ed1aa1][Remplacer require par use package!!!]]
-** Ultra pratique
+** Pratique
+*** [[https://github.com/abo-abo/hydra][HYDRA]]
 *** org download
   #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
     ;;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -222,6 +219,7 @@ Virer les undo tree des résultats de helm
 
     (global-set-key (kbd "C-c c p") 'copy-file-path)
     #+end_src
+    
 ** Fast init
 #+begin_src elisp :tangle ~/.emacs.d/config-perso.el
 ;;>>>>>>>>>>>>>>
@@ -279,6 +277,25 @@ Virer les undo tree des résultats de helm
 (message "Background color not set to black")))
 (set-background-color "black")
 #+end_src
+*** org-appear (bold, italic, ect) puces helena
+:PROPERTIES:
+:ID:       ec7ad35e-71ea-402e-be89-de9d357739a6
+:END:
+#+begin_src elisp  :tangle ~/.emacs.d/config-perso.el
+  ;;------------------------------------------------------------
+  ;; org-appear
+  (setq org-emphasis-alist
+  '(("*" (bold :background "#540602" :foreground "#d4cecd"))
+    ("/" (italic :background "#2e1f1a" :foreground "#e9967a")) ;402b24
+    ("_" (underline bold :foreground "#cd950c"))
+    ("=" (bold :foreground "#24d152")) 
+    ("~" (:foreground "#627bcc"))
+    ("+" (bold :strike-through "#FFFFFF"))))
+
+  (setq org-hide-emphasis-markers t) ;; Permet de planquer les étoiles quand on fait du gras par ex *jeajae*
+#+end_src
+
+
 ** Code en général
 *** Flycheck
 #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
@@ -522,53 +539,7 @@ En fait y'avait une fonction intégrée
     (global-set-key (kbd "C-c c c") 'copilot-mode)
     #+end_src
 ** Lisibilité
-*** Bionic reading
-#+begin_src elisp
-;;:tangle ~/.emacs.d/config-perso.el
-	  (defvar infu-bionic-reading-face nil "a face for `infu-bionic-reading-region'.")
-
-	  (setq infu-bionic-reading-face 'bold)
-	  ;; try
-	  ;; 'bold
-	  ;; 'error
-	  ;; 'warning
-	  ;; 'highlight
-	  ;; or any value of M-x list-faces-display
-
-	  (defun infu-bionic-reading-buffer ()
-	    "Bold the first few chars of every word in current buffer.
-	  Version 2022-05-21"
-	    (interactive)
-	    (infu-bionic-reading-region (point-min) (point-max)))
-
-	  (defun infu-bionic-reading-region (Begin End)
-	    "Bold the first few chars of every word in region.
-	  Version 2022-05-21"
-	    (interactive "r")
-	    (let (xBounds xWordBegin xWordEnd  )
-	      (save-restriction
-		(narrow-to-region Begin End)
-		(goto-char (point-min))
-		(while (forward-word)
-		  ;; bold the first half of the word to the left of cursor
-		  (setq xBounds (bounds-of-thing-at-point 'word))
-		  (setq xWordBegin (car xBounds))
-		  (setq xWordEnd (cdr xBounds))
-		  (setq xBoldEndPos (+ xWordBegin (1+ (/ (- xWordEnd xWordBegin) 2))))
-		  (put-text-property xWordBegin xBoldEndPos
-				     'font-lock-face infu-bionic-reading-face)))))
-	  ;; On rajoute un raccourci pour lancer bionic reading:
-
-
-    (global-set-key (kbd "C-c b") 'infu-bionic-reading-buffer)
-  ;; On met le focus in hook dans le org mode hook:
-  ;;(add-hook 'org-mode-hook
-  ;;	  (lambda ()
-  ;;	    (add-hook 'focus-in-hook 'infu-bionic-reading-buffer)))
-  ;; On change en un mode qu'on peut désactiver et activer
-
-
-#+end_src
+[[id:21cb7494-7388-42b2-9d17-beab5a570853][Bionic reading]]
 *** Focus mode
  #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
 ;;(defun my-org-mode-hook()
@@ -883,8 +854,6 @@ Cet avertissement est harmless, on s'en bas les couilles.
  '(org-babel-load-languages (quote ((emacs-lisp . t) (R . t))))
  '(org-confirm-babel-evaluate nil))
 #+end_src
-* [[https://github.com/abo-abo/hydra][HYDRA]]
-
 * fountain pour écrire scripts video
 #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
 (use-package fountain-mode
@@ -980,8 +949,14 @@ C-c C-K (elpy-shell-kill-all)
 :ID:       73cb7d26-9bbf-4729-b184-86fe986c966b
 :END:
 https://www.djcbsoftware.nl/code/mu/mu4e/Org_002dmode-links.html
-* AUtres
+* Autres
 #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
 (prefer-coding-system 'utf-8)
 #+end_src
 
+* images
+#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
+(setq org-image-actual-width '(300))
+#+end_src
+
+* Taille latex : [[file:~/.emacs::'(:foreground default :background default :scale 2.5 :html-foreground "Black" :html-background "Transparent" :html-scale 1.0 :matchers][Lien .emacs]]

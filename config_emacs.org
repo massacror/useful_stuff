@@ -3,7 +3,14 @@
 :END:
 #+title: Ma config emacs
 
-**** SAUVER la config emacs: [[id:f3f18585-dc83-4248-bb39-27b20587ff0b][Dépot useful stuff]]
+[[/home/kim/.emacs::258][.EMACS]]
+
+[[/home/kim/.emacs.d/config-perso.el][CONFIG PERSO emacs]]
+#+begin_src emacs-lisp 
+(load-file "/home/kim/.emacs.d/config-perso.el")
+#+end_src
+
+*** *SAUVER* la config emacs: [[id:f3f18585-dc83-4248-bb39-27b20587ff0b][Dépot useful stuff]]
 #+begin_src bash
 cp /home/kim/Dropbox/org-roam/20230715112804-ma_config_emacs.org /home/kim/Documents/useful_stuff_depot/config_emacs.org
 cd /home/kim/Documents/useful_stuff_depot
@@ -11,15 +18,7 @@ xterm -e git commit -a
 gnome-terminal -- /bin/sh -c "git push; exec bash"
 #+end_src
 
-[[id:e6c6a960-259e-4467-9900-5873f6ea1ec0][Emacs]]
-[[/home/kim/.emacs::258][.EMACS]]
-[[/home/kim/emacs_old.el][.EMACS ancien]]
 
-[[/home/kim/.emacs.d/config-perso.el][CONFIG PERSO emacs]]
-*Attention le tangle ECRASE LE FICHIER*
-#+begin_src emacs-lisp 
-(load-file "/home/kim/.emacs.d/config-perso.el")
-#+end_src
 
 ** MELPA
 #+begin_src elisp :tangle ~/.emacs.d/config-perso.el
@@ -295,7 +294,6 @@ Virer les undo tree des résultats de helm
   (setq org-hide-emphasis-markers t) ;; Permet de planquer les étoiles quand on fait du gras par ex *jeajae*
 #+end_src
 
-
 ** Code en général
 *** Flycheck
 #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
@@ -441,6 +439,77 @@ Go pas s'en servir
 
     ;; On rajoute un raccourci pour le terminal, C-c C-p comme pour python:
 #+end_src
+** [[id:31c9e4de-d2b5-4ba1-834a-516bea81ec0a][elpy]] 
+:PROPERTIES:
+:ID:       1dce59b9-79a3-4c3e-bca0-87a305e8a358
+:END:
+[[https://elpy.readthedocs.io/en/latest/quickstart.html][Basic keybindings]]
+
+Complétion: C-M-i
+
+C-c C-k (elpy-shell-kill)
+              Kill the associated python shell.
+C-c C-K (elpy-shell-kill-all)
+              Kill all active python shells.
+*** [[https://manpages.ubuntu.com/manpages/focal/man1/elpy.1.html][FONCTIONNALITES ELPY]]
+:PROPERTIES:
+:ID:       603a8efb-8f93-47cf-9aed-df8291f574de
+:END:
+*** config elpy
+#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
+    ;; PYTHON CONFIGURATION
+      ;; --------------------------------------
+(use-package elpy
+  :ensure t
+  :init
+  (elpy-enable))
+
+  (use-package flycheck
+    :ensure t
+    :hook
+    (prog-mode . flycheck-mode)
+    )
+
+  ;; Load up elpy
+  (setq elpy-rpc-python-command "/usr/bin/python3.8")
+
+  (add-hook 'python-mode-hook 'jedi:setup)
+  (define-key python-mode-map (kbd "M-.") 'jedi:goto-definition)
+  (setq jedi:complete-on-dot t)
+
+    ;; use flycheck not flymake with elpy
+  (when (require 'flycheck nil t)
+  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+      (add-hook 'elpy-mode-hook 'flycheck-mode)
+      (setq flycheck-python-pylint-executable "pylint3")
+      (setq flycheck-python-flake8-executable "flake8")
+      )
+  ;; enable autopep8 formatting on save
+    :ensure t
+    )
+  ;;(add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
+#+end_src
+** TODO [#A] Company : autocomplete!! CEST BROKEN
+
+C'EST BROKEN !!!!!!
+
+ça fonctionne enbash!!!!!
+#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
+(use-package company
+  :ensure t
+  :config
+  (setq company-idle-delay 0.2)
+  (setq company-minimum-prefix-length 1)
+  (global-company-mode t))
+
+;; company-jedi:
+#+end_src
+
+
+#+begin_src bash
+sudo pip3 install virtualenv
+#+end_src
+
 ** Divers
 *** imenu obsolète
     #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
@@ -861,80 +930,6 @@ Cet avertissement est harmless, on s'en bas les couilles.
   :mode "\\.fountain\\'"
   :config
   (setq fountain-export-path "/home/kim/Dropbox/org-roam/fountain/"))
-#+end_src
-
-* TODO [#A] Company : autocomplete!! CEST BROKEN
-
-C'EST BROKEN !!!!!!
-
-ça fonctionne enbash!!!!!
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-(use-package company
-  :ensure t
-  :config
-  (setq company-idle-delay 0.2)
-  (setq company-minimum-prefix-length 1)
-  (global-company-mode t))
-
-;; company-jedi:
-#+end_src
-
-
-#+begin_src bash
-sudo pip3 install virtualenv
-#+end_src
-
-* TODO [#A] company-jedi
-Pas besoin de l'activer, il est dans elpy
-* [[id:31c9e4de-d2b5-4ba1-834a-516bea81ec0a][elpy]] 
-:PROPERTIES:
-:ID:       1dce59b9-79a3-4c3e-bca0-87a305e8a358
-:END:
-[[https://elpy.readthedocs.io/en/latest/quickstart.html][Basic keybindings]]
-
-Complétion: C-M-i
-
-C-c C-k (elpy-shell-kill)
-              Kill the associated python shell.
-C-c C-K (elpy-shell-kill-all)
-              Kill all active python shells.
-** [[https://manpages.ubuntu.com/manpages/focal/man1/elpy.1.html][FONCTIONNALITES ELPY]]
-:PROPERTIES:
-:ID:       603a8efb-8f93-47cf-9aed-df8291f574de
-:END:
-** config elpy
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-    ;; PYTHON CONFIGURATION
-      ;; --------------------------------------
-(use-package elpy
-  :ensure t
-  :init
-  (elpy-enable))
-
-  (use-package flycheck
-    :ensure t
-    :hook
-    (prog-mode . flycheck-mode)
-    )
-
-  ;; Load up elpy
-  (setq elpy-rpc-python-command "/usr/bin/python3.8")
-
-  (add-hook 'python-mode-hook 'jedi:setup)
-  (define-key python-mode-map (kbd "M-.") 'jedi:goto-definition)
-  (setq jedi:complete-on-dot t)
-
-    ;; use flycheck not flymake with elpy
-  (when (require 'flycheck nil t)
-  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-      (add-hook 'elpy-mode-hook 'flycheck-mode)
-      (setq flycheck-python-pylint-executable "pylint3")
-      (setq flycheck-python-flake8-executable "flake8")
-      )
-  ;; enable autopep8 formatting on save
-    :ensure t
-    )
-  ;;(add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
 #+end_src
 * Ressources emacs
 :PROPERTIES:

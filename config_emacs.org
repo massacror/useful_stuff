@@ -10,6 +10,9 @@
 (load-file "/home/kim/.emacs.d/config-perso.el")
 #+end_src
 
+#+RESULTS:
+: t
+
 *** *SAUVER* la config emacs: [[id:f3f18585-dc83-4248-bb39-27b20587ff0b][Dépot useful stuff]]
 #+begin_src bash
 cp /home/kim/Dropbox/org-roam/20230715112804-ma_config_emacs.org /home/kim/Documents/useful_stuff_depot/config_emacs.org
@@ -17,6 +20,8 @@ cd /home/kim/Documents/useful_stuff_depot
 xterm -e git commit -a
 gnome-terminal -- /bin/sh -c "git push; exec bash"
 #+end_src
+
+#+RESULTS:
 
 
 
@@ -276,7 +281,7 @@ Virer les undo tree des résultats de helm
 (message "Background color not set to black")))
 (set-background-color "black")
 #+end_src
-*** org-appear (bold, italic, ect) puces helena
+*** org-appear ( gras, italique, ect) puces helena
 :PROPERTIES:
 :ID:       ec7ad35e-71ea-402e-be89-de9d357739a6
 :END:
@@ -284,7 +289,7 @@ Virer les undo tree des résultats de helm
   ;;------------------------------------------------------------
   ;; org-appear
   (setq org-emphasis-alist
-  '(("*" (bold :background "#540602" :foreground "#d4cecd"))
+  '(("*" (bold :foreground "#e82546"))
     ("/" (italic :background "#2e1f1a" :foreground "#e9967a")) ;402b24
     ("_" (underline bold :foreground "#cd950c"))
     ("=" (bold :foreground "#24d152")) 
@@ -293,6 +298,9 @@ Virer les undo tree des résultats de helm
 
   (setq org-hide-emphasis-markers t) ;; Permet de planquer les étoiles quand on fait du gras par ex *jeajae*
 #+end_src
+
+#+RESULTS:
+: t
 
 ** Code en général
 *** Flycheck
@@ -482,12 +490,7 @@ C-c C-K (elpy-shell-kill-all)
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
       (add-hook 'elpy-mode-hook 'flycheck-mode)
       (setq flycheck-python-pylint-executable "pylint3")
-      (setq flycheck-python-flake8-executable "flake8")
-      )
-  ;; enable autopep8 formatting on save
-    :ensure t
-    )
-  ;;(add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
+      (setq flycheck-python-flake8-executable "flake8"))
 #+end_src
 ** TODO [#A] Company : autocomplete!! CEST BROKEN
 
@@ -904,9 +907,10 @@ Cet avertissement est harmless, on s'en bas les couilles.
 :PROPERTIES:
 :ID:       07646d3c-df7c-42e6-848d-d2ba78c1c699
 :END:
+On utilise plus revert buffer mais revert buffer quick : C-x x g
 #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-;; Revert buffer
-(global-set-key (kbd "C-c r") 'revert-buffer)
+    ;; Revert buffer
+    ;; (global-set-key (kbd "C-c r") 'revert-buffer)
 #+end_src
 
 ** Ressources literate programming
@@ -947,7 +951,11 @@ https://www.djcbsoftware.nl/code/mu/mu4e/Org_002dmode-links.html
 * Autres
 #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
 (prefer-coding-system 'utf-8)
+(setq org-highlight-latex-and-related '(latex))
 #+end_src
+
+#+RESULTS:
+| latex |
 
 * images
 #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el

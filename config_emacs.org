@@ -290,7 +290,7 @@ Virer les undo tree des résultats de helm
   ;; org-appear
   (setq org-emphasis-alist
   '(("*" (bold :foreground "#e82546"))
-    ("/" (italic :background "#2e1f1a" :foreground "#e9967a")) ;402b24
+    ("/" (italic :background "#2e1f1a" :foreground "#e9967a" :height 0.8)) ;402b24
     ("_" (underline bold :foreground "#cd950c"))
     ("=" (bold :foreground "#24d152")) 
     ("~" (:foreground "#627bcc"))
@@ -608,7 +608,9 @@ En fait y'avait une fonction intégrée
     ;; On active copilot dans org :
 
     ;; On rajoute un moyen de toggle le copilot mode:
-    (global-set-key (kbd "C-c c c") 'copilot-mode)
+(global-set-key (kbd "C-c c c") 'copilot-mode)
+;;(copilot-mode 1)
+
     #+end_src
 ** Lisibilité
 [[id:21cb7494-7388-42b2-9d17-beab5a570853][Bionic reading]]
@@ -962,4 +964,25 @@ https://www.djcbsoftware.nl/code/mu/mu4e/Org_002dmode-links.html
 (setq org-image-actual-width '(300))
 #+end_src
 
-* Taille latex : [[file:~/.emacs::'(:foreground default :background default :scale 2.5 :html-foreground "Black" :html-background "Transparent" :html-scale 1.0 :matchers][Lien .emacs]]
+* taille latex :
+:PROPERTIES:
+:ID:       96fe9ba5-2a4c-4062-b86b-58e477769da6
+:END:
+
+[[file:~/.emacs::'(:foreground default :background default :scale 2.5 :html-foreground "Black" :html-background "Transparent" :html-scale 1.0 :matchers][Lien .emacs]]
+
+ Chercher 
+ =org-format-latex-options=
+
+
+ 
+* Zoomer avec les formules latex
+
+Pour pouvoir zoomer
+#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
+(defun update-org-latex-fragments ()
+  (org-latex-preview '(64))
+  (plist-put org-format-latex-options :scale text-scale-mode-amount)
+  (org-latex-preview '(16)))
+(add-hook 'text-scale-mode-hook 'update-org-latex-fragments)
+#+end_src

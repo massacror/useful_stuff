@@ -975,14 +975,14 @@ https://www.djcbsoftware.nl/code/mu/mu4e/Org_002dmode-links.html
  =org-format-latex-options=
 
 
- 
 * Zoomer avec les formules latex
-
 Pour pouvoir zoomer
 #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
 (defun update-org-latex-fragments ()
   (org-latex-preview '(64))
-  (plist-put org-format-latex-options :scale text-scale-mode-amount)
+  ;; On multiplie par un peu plus que 1:
+  (setq jaj (+ 2.5 text-scale-mode-amount))
+  (plist-put org-format-latex-options :scale jaj)
   (org-latex-preview '(16)))
 (add-hook 'text-scale-mode-hook 'update-org-latex-fragments)
 #+end_src

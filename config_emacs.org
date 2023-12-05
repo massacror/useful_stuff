@@ -24,7 +24,6 @@ gnome-terminal -- /bin/sh -c "git push; exec bash"
 #+RESULTS:
 
 
-
 ** MELPA
 #+begin_src elisp :tangle ~/.emacs.d/config-perso.el
 (require 'package)
@@ -81,6 +80,14 @@ PERMET DE NE PAS AVOIR A INSTALLER LES PACKAGES MANUELLEMENT (ultra puissant)
     (define-key global-map "\C-ca" 'org-agenda)
     (setq org-log-done t)
 
+;; org agenda at startup :
+;;(add-hook 'after-init-hook 'org-agenda-list)
+;;
+;;(setq initial-buffer-choice (lambda () (get-buffer-create "*Org Agenda*")))
+
+
+
+
 
     #+end_src
 *** undo tree
@@ -92,7 +99,6 @@ PERMET DE NE PAS AVOIR A INSTALLER LES PACKAGES MANUELLEMENT (ultra puissant)
     (prog-mode . undo-tree-mode)
     (org-mode . undo-tree-mode)
     )
-
   (setq undo-tree-visualizer-diff t)
   (setq undo-tree-history-directory-alist
         '(("." . "/home/kim/Dropbox/org-roam/undo_trees")))
@@ -229,7 +235,7 @@ Virer les undo tree des résultats de helm
 ;;>>>>>>>>>>>>>>
 
 (setq inhibit-startup-echo-area-message "tychoish")
-(setq inhibit-startup-message 't)
+;;(setq inhibit-startup-message 't)
 (setq initial-major-mode 'fundamental-mode)
 (setq initial-scratch-message 'nil)
 
@@ -243,6 +249,8 @@ Virer les undo tree des résultats de helm
 (menu-bar-mode -1)
 ;; On enlève la barre d'outils:
 (tool-bar-mode -1)
+
+(mouse-avoidance-mode 'banish)
 #+end_src
 
 #+RESULTS:
@@ -281,6 +289,22 @@ Virer les undo tree des résultats de helm
 (message "Background color not set to black")))
 (set-background-color "black")
 #+end_src
+*** Org bullets
+:PROPERTIES:
+:ID:       82c6d96c-f00b-4529-a91c-0a37ba0e0a44
+:END:
+#+begin_src emacs-lisp :tangle  ~/.emacs.d/config-perso.el
+(use-package org-bullets
+  :ensure t
+  :config
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+;;(use-package doom-themes)
+
+#+end_src
+
+Ce package est =vraiment agréable=
+Il permet d'avoir des bullets propres sur mes titres org
+
 *** org-appear ( gras, italique, ect) puces helena
 :PROPERTIES:
 :ID:       ec7ad35e-71ea-402e-be89-de9d357739a6
@@ -290,7 +314,7 @@ Virer les undo tree des résultats de helm
   ;; org-appear
   (setq org-emphasis-alist
   '(("*" (bold :foreground "#e82546"))
-    ("/" (italic :background "#2e1f1a" :foreground "#e9967a" :height 0.8)) ;402b24
+    ("/" (italic :background "#2e1f1a" :foreground "#e9967a" :height 0.95)) ;402b24
     ("_" (underline bold :foreground "#cd950c"))
     ("=" (bold :foreground "#24d152")) 
     ("~" (:foreground "#627bcc"))
@@ -413,7 +437,6 @@ Go pas s'en servir
     #+end_src
 *** flutter
 #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-
     ;; FLUTTER ET DART : 
 
     ;; On va activer imenu :
@@ -441,11 +464,26 @@ Go pas s'en servir
     ;; Le tout dans un gnome-terminal:
 
 
+;; On lance un terminal avec un read -n 1 -s -r -p "Press any key to continue" à la fin:
+    (defun dart-run ()
+      "Run the current file in a terminal."
+      (interactive)
+      (let ((proc-name "dart-run"))
+	(when (get-buffer proc-name)
+	  (kill-buffer proc-name))
+	(start-process proc-name proc-name "xterm" "-hold" "-e" "bash" "-c" (concat "dart " (buffer-file-name) " && read -n 1 -s -r -p \"Press any key to continue\""))))
+
 
     (add-hook 'dart-mode-hook
-	      (lambda () (local-set-key (kbd "C-c C-c") 'lsp-dart-run)))
+	      ;;(lambda () (local-set-key (kbd "C-c C-c") 'dart-run)) ;; à activer pour du dart en shell
+	      (lambda () (local-set-key (kbd "C-c C-c") 'flutter-run-or-hot-reload)) ;; à activer pour du flutter
+
+	      )
+
 
     ;; On rajoute un raccourci pour le terminal, C-c C-p comme pour python:
+
+
 #+end_src
 ** [[id:31c9e4de-d2b5-4ba1-834a-516bea81ec0a][elpy]] 
 :PROPERTIES:
@@ -593,7 +631,7 @@ En fait y'avait une fonction intégrée
     (add-to-list 'load-path "~/.emacs.d/copilot_pour_emacs/")
     (require 'copilot)
     (add-hook 'prog-mode-hook 'copilot-mode) ;; On active copilot dans tous les modes prog (python, js, etc)
-
+    (add-hook 'org-mode-hook 'copilot-mode) ;; On active copilot dans ORG
 
     (customize-set-variable 'copilot-enable-predicates '(evil-insert-state-p))
 
@@ -763,19 +801,6 @@ permet de [[id:6c0b90f9-2375-4496-820f-5e6cb79c6e29][créer des multi roam]]
 * org roam data base
 #+begin_src emacs-lisp :tangle  ~/.emacs.d/config-perso.el
 (setq org-roam-db-location (file-truename "~/Dropbox/org-roam/roamDatabaseLinux.db"))
-#+end_src
-
-* Org bullets
-:PROPERTIES:
-:ID:       82c6d96c-f00b-4529-a91c-0a37ba0e0a44
-:END:
-#+begin_src emacs-lisp :tangle  ~/.emacs.d/config-perso.el
-(use-package org-bullets
-  :ensure t
-  :config
-  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
-;;(use-package doom-themes)
-
 #+end_src
 
 * org reveal : presentations stylées!
@@ -975,14 +1000,94 @@ https://www.djcbsoftware.nl/code/mu/mu4e/Org_002dmode-links.html
  =org-format-latex-options=
 
 
-* Zoomer avec les formules latex
+* TODO Zoomer avec les formules latex
+:PROPERTIES:
+:ID:       55476fcf-c3c2-4c7b-b32f-3a6767e5d920
+:END:
 Pour pouvoir zoomer
 #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
 (defun update-org-latex-fragments ()
   (org-latex-preview '(64))
   ;; On multiplie par un peu plus que 1:
-  (setq jaj (+ 2.5 text-scale-mode-amount))
+  (setq jaj (+ 1.8 text-scale-mode-amount))
   (plist-put org-format-latex-options :scale jaj)
   (org-latex-preview '(16)))
 (add-hook 'text-scale-mode-hook 'update-org-latex-fragments)
+#+end_src
+
+* Ascidoc
+#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el 
+(use-package adoc-mode
+  :ensure t
+  :mode "\\.adoc\\'"
+  :config
+  (setq adoc-indent-per-level 2))
+#+end_src
+* TODO programme [[id:e9d21ca1-5ccf-47b8-af52-1f8aacc2b834][python avec C++]]
+* Recherche 
+** [[https://github.com/weirdNox/org-noter][org noter]] + zotero  
+:PROPERTIES:
+:ID:       409a9ce9-04ae-4596-a56a-3e7ae38095ce
+:END:
+
+#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el 
+(use-package org-noter
+:ensure t)
+#+end_src
+
+* package : dashboard
+Sympa 
+5:30
+https://www.youtube.com/watch?v=kRkp-uJTK7s
+
+
+#+begin_src emacs-lisp
+:tangle ~/.emacs.d/config-perso.el
+(use-package dashboard
+  :ensure t
+  :config
+  (dashboard-setup-startup-hook))
+(setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+(setq dashboard-week-agenda t)
+#+end_src
+
+#+RESULTS:
+: t
+
+https://github.com/emacs-dashboard/emacs-dashboard
+
+*Pas très utile, je préfère org agenda*
+
+
+* tangler et insérer le lien
+
+* language C 
+
+g++ -g -pedantic -Wall -o hello hello.c
+#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
+(defun execute-c-program ()
+  (interactive)
+  (defvar foo)
+  (setq foo (concat "gcc -g -pedantic -Wall -o " (file-name-sans-extension (buffer-name)) " " (buffer-name)))
+  ;; On execute: 
+  (setq execute (concat "xterm -hold -e ./" (file-name-sans-extension (buffer-name))))
+  (shell-command foo)
+  (shell-command execute))
+
+;;;;;;;;;; compiler
+
+(add-hook 'c-mode-hook
+      (function (lambda ()
+        (local-set-key (kbd "C-c C-c") 'execute-c-program))))
+
+(add-hook 'c-mode-common-hook
+          (lambda () (company-mode)))
+
+(use-package cc-mode :ensure t)
+
+(setq gdb-many-windows t)
+(setq gdb-show-main t)
+
+(add-hook 'c-mode-common-hook
+          (lambda () (flycheck-mode)))
 #+end_src

@@ -23,7 +23,6 @@ gnome-terminal -- /bin/sh -c "git push; exec bash"
 
 #+RESULTS:
 
-
 ** MELPA
 #+begin_src elisp :tangle ~/.emacs.d/config-perso.el
 (require 'package)
@@ -1065,21 +1064,26 @@ https://github.com/emacs-dashboard/emacs-dashboard
 
 g++ -g -pedantic -Wall -o hello hello.c
 #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-(defun execute-c-program ()
-  (interactive)
-  (defvar foo)
-  (setq foo (concat "gcc -g -pedantic -Wall -o " (file-name-sans-extension (buffer-name)) " " (buffer-name)))
-  ;; On execute: 
-  (setq execute (concat "xterm -hold -e ./" (file-name-sans-extension (buffer-name))))
-  (shell-command foo)
-  (shell-command execute))
-
-;;;;;;;;;; compiler
-
+;;(defun execute-c-program ()
+;;  (interactive)
+;;  (defvar foo)
+;;  (setq foo (concat "gcc -g -pedantic -Wall -o " (file-name-sans-extension (buffer-name)) " " (buffer-name)))
+;;  ;; On execute: 
+;;  (setq execute (concat "xterm -hold -e ./" (file-name-sans-extension (buffer-name))))
+;;  (shell-command foo)
+;;  (shell-command execute))
+;;
+;;;;;;;;;;;; compiler
+;;
+;;(add-hook 'c-mode-hook
+;;      (function (lambda ()
+;;        (local-set-key (kbd "C-c C-c") 'execute-c-program))))
 (add-hook 'c-mode-hook
       (function (lambda ()
-        (local-set-key (kbd "C-c C-c") 'execute-c-program))))
+        (local-set-key (kbd "C-c C-c") 'compile))))
 
+;; On set la commmande de compilation par défaut :
+(setq compile-command "g++ -g -pedantic -Wall -c")
 (add-hook 'c-mode-common-hook
           (lambda () (company-mode)))
 
@@ -1090,4 +1094,26 @@ g++ -g -pedantic -Wall -o hello hello.c
 
 (add-hook 'c-mode-common-hook
           (lambda () (flycheck-mode)))
+#+end_src
+
+* org file apps à rajouter
+
+#+begin_src emacs-lisp
+ '(org-file-apps
+   '((auto-mode . emacs)
+     (directory . emacs)
+     ("\\.mm\\'" . default)
+     ("\\.x?html?\\'" . default)
+     ("\\.pdf\\'" . "mupdf %s")
+     ("\\.md\\'" . "code %s")
+     ("\\.djvu\\'" . "xdg-open %s")
+     ("\\.epub\\'" . "mupdf %s")
+     ("\\.odt\\'\11" . "libreoffice %s")
+     ("\\.hip\\'\11" . "houdini %s")
+     ("\\.blend\\'" . "blender %s")
+     ("\\.xcf\\'" . "gimp %s")
+     ("\\.hip\\'" . "/opt/hfs18.5.532/bin/houdinifx %s")
+     ("\\.ntp\\'" . "~/Natron-2.3.15/Natron %s")
+     ("\\.mp4\\'" . "vlc %s")))
+
 #+end_src

@@ -12,16 +12,13 @@
 
 #+RESULTS:
 : t
-
 *** *SAUVER* la config emacs: [[id:f3f18585-dc83-4248-bb39-27b20587ff0b][Dépot useful stuff]]
 #+begin_src bash
-cp /home/kim/Dropbox/org-roam/20230715112804-ma_config_emacs.org /home/kim/Documents/useful_stuff_depot/config_emacs.org
+cp /home/kim/org-roam/20230715112804-ma_config_emacs.org /home/kim/Documents/useful_stuff_depot/config_emacs.org
 cd /home/kim/Documents/useful_stuff_depot
 xterm -e git commit -a
 gnome-terminal -- /bin/sh -c "git push; exec bash"
 #+end_src
-
-#+RESULTS:
 
 ** MELPA
 #+begin_src elisp :tangle ~/.emacs.d/config-perso.el
@@ -93,6 +90,7 @@ PERMET DE NE PAS AVOIR A INSTALLER LES PACKAGES MANUELLEMENT (ultra puissant)
   #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
 
 	  ;; Le undo tree broken
+(global-undo-tree-mode)
   (use-package undo-tree :ensure t
     :hook
     (prog-mode . undo-tree-mode)
@@ -100,7 +98,7 @@ PERMET DE NE PAS AVOIR A INSTALLER LES PACKAGES MANUELLEMENT (ultra puissant)
     )
   (setq undo-tree-visualizer-diff t)
   (setq undo-tree-history-directory-alist
-        '(("." . "/home/kim/Dropbox/org-roam/undo_trees")))
+        '(("." . "/home/kim/org-roam/undo_trees")))
 
 ;; Un hook permet d'activer un truc dans un mode bien précis
 ;; Par ex, ici j'active le focus mode à chq fois que je lance org mode
@@ -130,49 +128,6 @@ PERMET DE NE PAS AVOIR A INSTALLER LES PACKAGES MANUELLEMENT (ultra puissant)
     ;;(use-package evil-mc :ensure t)
     ;;(global-evil-mc-mode 1) 
 #+end_src
-*** [#A] HELM config
-:PROPERTIES:
-:ID:       ba40e4b7-e9a1-4fd4-9508-edb6828a080f
-:END:
-Rajouter un truc pour avoir les mêmes bindings que ivy pour naviguer (C-j, C-k
-et C-SPC sont  super pratiques)
-
-Je l'utilise pour :
-- Il détecte les chemins dans du plain texte
-- Il se souvient des dernières recherches
-- Il peut afficher la doc des fonctions dans M-x
-- 
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-;; HELM
-(use-package helm
-:ensure t
-:bind
-("C-x C-f" . helm-find-files)
-("M-x" . helm-M-x)
-("C-x C-j" . helm-recentf)
-("M-s o" . helm-occur)
-("M-y" . helm-show-kill-ring)
-)
-(helm-mode 1)
-
-
-;; Charger Swiper pour une recherche dans Emacs avec Ivy
-(use-package swiper
-  :ensure t
-  :bind (("C-s" . swiper))
-  ) 
-(setq org-roam-completion-system 'ivy)
-#+end_src
-**** Helm skip boring files
-Virer les undo tree des résultats de helm
-(Je l'ai pas mis)
-#+begin_src emacs-lisp 
-(custom-set-variables
- '(helm-ag-ignore-patterns '("*.~undo-tree~")))
-#+end_src
-
-#+RESULTS:
-
 *** ivy
 - Complétion dans le terminal
 - 
@@ -228,6 +183,61 @@ Virer les undo tree des résultats de helm
 
     (global-set-key (kbd "C-c c p") 'copy-file-path)
     #+end_src
+** [#A] HELM config
+:PROPERTIES:
+:ID:       32d4cc31-7231-46ff-9486-f4139488be7d
+:END:
+Rajouter un truc pour avoir les mêmes bindings que ivy pour naviguer (C-j, C-k
+et C-SPC sont  super pratiques)
+
+Je l'utilise pour :
+- Il détecte les chemins dans du plain texte
+- Il se souvient des dernières recherches
+- Il peut afficher la doc des fonctions dans M-x
+- 
+#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
+    ;; HELM
+    (use-package helm
+    :ensure t
+    :bind
+    ("C-x C-f" . helm-find-files)
+    ("M-x" . helm-M-x)
+    ("C-x C-j" . helm-recentf)
+    ("M-s o" . helm-occur)
+    ("M-y" . helm-show-kill-ring)
+    ("C-S-s" . helm-multi-swoop-all)
+    ("M-i" . helm-multi-swoop)
+    ("M-s M-i" . helm-multi-swoop-all)
+
+    )
+(use-package swiper
+  :ensure t
+  :bind (("C-s" . swiper))
+  ) 
+
+    (helm-mode 1)
+
+
+    (setq org-roam-completion-system 'ivy)
+#+end_src
+
+#+RESULTS:
+: ivy
+
+*** Helm skip boring files
+Virer les undo tree des résultats de helm
+(Je l'ai pas mis)
+#+begin_src emacs-lisp 
+(custom-set-variables
+ '(helm-ag-ignore-patterns '("*.~undo-tree~")))
+#+end_src
+*** problème helm bloqué history
+:PROPERTIES:
+:ID:       9a1b3124-ed4c-4c8f-babf-df50c1ba4be1
+:END:
+
+Faut utiliser helm-next-source : *C-o* et *M-o*
+
     
 ** Fast init
 #+begin_src elisp :tangle ~/.emacs.d/config-perso.el
@@ -249,7 +259,7 @@ Virer les undo tree des résultats de helm
 ;; On enlève la barre d'outils:
 (tool-bar-mode -1)
 
-(mouse-avoidance-mode 'banish)
+;;(mouse-avoidance-mode 'banish)
 #+end_src
 
 #+RESULTS:
@@ -267,11 +277,16 @@ Virer les undo tree des résultats de helm
 *** EVIL
 #+begin_src elisp :tangle ~/.emacs.d/config-perso.el
     ;; Enable Evil
-  (use-package evil :ensure t)
+    (use-package evil
+    :ensure t
+    :init (setq evil-want-C-i-jump nil);; permet d'avoir tab 
+    )
+
   (evil-mode 1)
 #+end_src
 *** hook background black
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
+#+begin_src emacs-lisp
+:tangle ~/.emacs.d/config-perso.el
 ;; Oncrée un hook pour server-visits-mode:
 
 (add-hook 'focus-in-hook 'server-visits-hook-custom-actions)
@@ -484,6 +499,30 @@ Go pas s'en servir
 
 
 #+end_src
+*** bash
+
+#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
+    ;; BASH :
+
+    ;; On va activer imenu :
+
+    (add-hook 'sh-mode-hook 'imenu-add-menubar-index)
+
+    ;; On va rajouter un raccourci pour le terminal:
+
+    (defun bash-run ()
+      "Run the current file in a terminal."
+      (interactive)
+      (let ((proc-name "bash-run"))
+	(when (get-buffer proc-name)
+	  (kill-buffer proc-name))
+	(start-process proc-name proc-name "gnome-terminal" "-e" (concat (buffer-file-name) " && read -n 1 -s -r -p \"Press any key to continue\""))))
+
+    (add-hook 'sh-mode-hook
+	      (lambda () (local-set-key (kbd "C-c C-c") 'bash-run))
+	      )
+#+end_src
+
 ** [[id:31c9e4de-d2b5-4ba1-834a-516bea81ec0a][elpy]] 
 :PROPERTIES:
 :ID:       1dce59b9-79a3-4c3e-bca0-87a305e8a358
@@ -518,6 +557,7 @@ C-c C-K (elpy-shell-kill-all)
   ;; Load up elpy
   (setq elpy-rpc-python-command "/usr/bin/python3.8")
 
+  ;;(use-package jedi :ensure t)
   (add-hook 'python-mode-hook 'jedi:setup)
   (define-key python-mode-map (kbd "M-.") 'jedi:goto-definition)
   (setq jedi:complete-on-dot t)
@@ -661,6 +701,7 @@ En fait y'avait une fonction intégrée
 (global-set-key (kbd "C-c f") 'focus-change-thing);;Lancer C-c f permet de changer le thing de focus
  #+end_src
  
+
 *** Folder le code dans emacs
 :PROPERTIES:
 :ID:       d76a9d0d-7733-4c5d-94ea-9834cf7cf393
@@ -716,7 +757,7 @@ C'est BROKEN
 ;; L'intérêt de ce truc est de capturer un truc en plein milieu de mon taf et de revenir à ce que je faisais juste après
 (global-set-key (kbd "\C-c n b") 'org-roam-db-build-cache) ;; Pour créer la database
 (global-set-key (kbd "\C-c n r") 'org-roam-db-sync) ;; Pour la refresh
-(setq org-roam-directory (file-truename "~/Dropbox/org-roam"))
+(setq org-roam-directory (file-truename "~/org-roam"))
 (setq org-roam-completion-everywhere t)
 ;;(setq find-file-visit-truename t) 
 ;; Symbolic links???
@@ -797,11 +838,6 @@ C'est BROKEN
 
 permet de [[id:6c0b90f9-2375-4496-820f-5e6cb79c6e29][créer des multi roam]]
 
-* org roam data base
-#+begin_src emacs-lisp :tangle  ~/.emacs.d/config-perso.el
-(setq org-roam-db-location (file-truename "~/Dropbox/org-roam/roamDatabaseLinux.db"))
-#+end_src
-
 * org reveal : presentations stylées!
 :PROPERTIES:
 :ID:       f8fb1393-6191-4ce3-bc47-792a268c61bf
@@ -823,16 +859,21 @@ echo $(pwd)
 #+end_src
 ** emplacement
 
-[[/home/kim/Dropbox/org-roam/reveal_presentations]]
+[[/home/kim/org-roam/reveal_presentations]]
 ** config elisp
 #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
 ;; Reveal.js + Org mode
 (use-package ox-reveal :ensure t)
-(setq Org-Reveal-root "file:///home/kim/Dropbox/org-roam/reveal_presentations/reveal.js/")
+(setq Org-Reveal-root "file:///home/kim/org-roam/reveal_presentations/reveal.js/")
 (setq Org-Reveal-title-slide nil)
 #+end_src
 
 [[id:88ddce84-ee10-4841-886f-39e4ee776b0e][test org reveal]]
+* org roam data base
+#+begin_src emacs-lisp :tangle  ~/.emacs.d/config-perso.el
+(setq org-roam-db-location (file-truename "~/org-roam/roamDatabaseLinux.db"))
+#+end_src
+
 * Literate programming config
 :PROPERTIES:
 :ID:       ff02b1e7-e6c5-4d09-9771-9f1acccd98cc
@@ -959,7 +1000,7 @@ On utilise plus revert buffer mais revert buffer quick : C-x x g
   :ensure t
   :mode "\\.fountain\\'"
   :config
-  (setq fountain-export-path "/home/kim/Dropbox/org-roam/fountain/"))
+  (setq fountain-export-path "/home/kim/org-roam/fountain/"))
 #+end_src
 * Ressources emacs
 :PROPERTIES:
@@ -994,10 +1035,10 @@ https://www.djcbsoftware.nl/code/mu/mu4e/Org_002dmode-links.html
 :END:
 
 [[file:~/.emacs::'(:foreground default :background default :scale 2.5 :html-foreground "Black" :html-background "Transparent" :html-scale 1.0 :matchers][Lien .emacs]]
+[[file:~/.emacs::'(:foreground default :background default :scale 2 :html-foreground "Black" :html-background "Transparent" :html-scale 1.0 :matchers][.emacs DELL]]
 
  Chercher 
  =org-format-latex-options=
-
 
 * TODO Zoomer avec les formules latex
 :PROPERTIES:
@@ -1056,7 +1097,6 @@ https://www.youtube.com/watch?v=kRkp-uJTK7s
 https://github.com/emacs-dashboard/emacs-dashboard
 
 *Pas très utile, je préfère org agenda*
-
 
 * tangler et insérer le lien
 
@@ -1117,3 +1157,259 @@ g++ -g -pedantic -Wall -o hello hello.c
      ("\\.mp4\\'" . "vlc %s")))
 
 #+end_src
+
+* tangling + chmod 
+
+#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
+(defun my-org-babel-tangle-chmod ()
+  "Tangle and chmod +x"
+  (interactive)
+  (org-babel-tangle)
+  (dolist (file (org-babel-tangle))
+    ;; On affiche le fichier
+    (message file)
+    ;; On fait un chmod +x sur le fichier
+    ;; On affiche la commande shell:
+    (shell-command (format "chmod +x %s" file))
+    (message (format "chmod +x %s" file))))
+
+
+;; On remplace la fonction org-babel-tangle par notre fonction
+
+
+(add-hook 'org-mode-hook
+	  (lambda ()
+	    (local-set-key (kbd "C-c C-v C-t") 'my-org-babel-tangle-chmod)))
+;; On peut maintenant faire un C-c C-v t pour tangle et rendre exécutable le fichier source
+#+end_src
+
+#+RESULTS:
+| (lambda nil (local-set-key (kbd C-c C-v C-t) 'my-org-babel-tangle-chmod)) | (lambda nil (setq evil-auto-indent nil)) | (lambda nil (local-set-key (kbd  n p) 'org-id-get-create) (local-set-key (kbd  n m) 'org-roam-refile)) | my-org-mode-hook | (lambda nil (local-set-key (kbd  n g) 'org-roam-ui-change-local-graph) (local-set-key (kbd  n d) 'org-roam-ui-remove-from-local-graph) (local-set-key (kbd  n a) 'org-roam-ui-add-to-local-graph) (local-set-key (kbd  n z) 'org-roam-ui-node-zoom)) | (lambda nil (local-set-key (kbd <tab>) 'org-cycle)) | copilot-mode | #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | (lambda nil (org-bullets-mode 1)) | undo-tree-mode | (lambda nil (local-set-key (kbd  i) 'org-download-clipboard)) | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-fold-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes |
+
+* copilot 2024
+*** install bash
+#+begin_src bash
+git clone https://github.com/rksm/copilot-emacsd.git
+cd copilot-emacsd
+git submodule update --init --recursive
+#+end_src
+
+#+RESULTS:
+
+*** load dans emacs
+En fait faut juste choper copilot.el et l'executer quoi
+#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso-dell.el
+
+(load-file "~/copilot-emacsd/copilot.el/copilot.el")
+
+
+(if (daemonp)
+    (add-hook 'after-make-frame-functions
+		(lambda (frame)
+		(setenv "PATH" (concat "/home/kim/bin/node-v20.11.0-linux-x64/bin" (getenv "PATH")))
+		(setq exec-path (append '("/home/kim/bin/node-v20.11.0-linux-x64/bin") exec-path)))))
+
+
+  (add-hook 'org-mode-hook 'copilot-mode) ;; On active copilot dans ORG
+  (customize-set-variable 'copilot-enable-predicates '(evil-insert-state-p))
+  (define-key copilot-completion-map (kbd "<tab>") 'copilot-tab)
+  (define-key copilot-completion-map (kbd "TAB") 'copilot-tab)
+  (setenv "PATH" (concat "/home/kim/bin/node-v20.11.0-linux-x64/bin" (getenv "PATH")))
+  (setq exec-path (append '("/home/kim/bin/node-v20.11.0-linux-x64/bin") exec-path))
+
+  ;; (global-set-key (kbd "C-c c c") 'copilot-complete)
+
+  (copilot-mode 1)
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(defun rk/copilot-tab ()
+  "Tab command that will complet with copilot if a completion is
+available. Otherwise will try company, yasnippet or normal
+tab-indent."
+  (interactive)
+  (or (copilot-accept-completion)
+      (company-yasnippet-or-completion)
+      (indent-for-tab-command)))
+
+(defun rk/copilot-complete-or-accept ()
+  "Command that either triggers a completion or accepts one if one
+is available. Useful if you tend to hammer your keys like I do."
+  (interactive)
+  (if (copilot--overlay-visible)
+      (progn
+        (copilot-accept-completion)
+        (open-line 1)
+        (next-line))
+    (copilot-complete)))
+
+(defun rk/copilot-quit ()
+  "Run `copilot-clear-overlay' or `keyboard-quit'. If copilot is
+cleared, make sure the overlay doesn't come back too soon."
+  (interactive)
+  (condition-case err
+      (when copilot--overlay
+        (lexical-let ((pre-copilot-disable-predicates copilot-disable-predicates))
+          (setq copilot-disable-predicates (list (lambda () t)))
+          (copilot-clear-overlay)
+          (run-with-idle-timer
+           1.0
+           nil
+           (lambda ()
+             (setq copilot-disable-predicates pre-copilot-disable-predicates)))))
+    (error handler)))
+
+(defun rk/copilot-complete-if-active (next-func n)
+  (let ((completed (when copilot-mode (copilot-accept-completion))))
+    (unless completed (funcall next-func n))))
+
+(defun rk/no-copilot-mode ()
+  "Helper for `rk/no-copilot-modes'."
+  (copilot-mode -1))
+
+(defvar rk/no-copilot-modes '(shell-mode
+                              inferior-python-mode
+                              eshell-mode
+                              term-mode
+                              vterm-mode
+                              comint-mode
+                              compilation-mode
+                              debugger-mode
+                              dired-mode-hook
+                              compilation-mode-hook
+                              flutter-mode-hook
+                              minibuffer-mode-hook)
+  "Modes in which copilot is inconvenient.")
+
+(defvar rk/copilot-manual-mode nil
+  "When `t' will only show completions when manually triggered, e.g. via M-C-<return>.")
+
+
+
+
+(defun rk/copilot-enable-predicate ()
+  ""
+  (and
+   (eq (get-buffer-window) (selected-window))))
+
+;;(defun rk/copilot-disable-predicate ()
+;;  "When copilot should not automatically show completions."
+;;  (or rk/copilot-manual-mode
+;;      (member major-mode rk/no-copilot-modes)
+;;      (and (not rk/copilot-enable-for-org) (eq major-mode 'org-mode))
+;;      (company--active-p)))
+
+(defun rk/copilot-change-activation ()
+  "Switch between three activation modes:
+- automatic: copilot will automatically overlay completions
+- manual: you need to press a key (M-C-<return>) to trigger completions
+- off: copilot is completely disabled."
+  (interactive)
+  (if (and copilot-mode rk/copilot-manual-mode)
+      (progn
+        (message "deactivating copilot")
+        (global-copilot-mode -1)
+        (setq rk/copilot-manual-mode nil))
+    (if copilot-mode
+        (progn
+          (message "activating copilot manual mode")
+          (setq rk/copilot-manual-mode t))
+      (message "activating copilot mode")
+      (global-copilot-mode))))
+
+(defun rk/copilot-toggle-for-org ()
+  "Toggle copilot activation in org mode. It can sometimes be
+annoying, sometimes be useful, that's why this can be handly."
+  (interactive)
+  (setq rk/copilot-enable-for-org (not rk/copilot-enable-for-org))
+  (message "copilot for org is %s" (if rk/copilot-enable-for-org "enabled" "disabled")))
+
+;; load the copilot package
+(use-package copilot
+  :load-path (lambda () (expand-file-name "copilot.el" user-emacs-directory))
+
+  :diminish ;; don't show in mode line (we don't wanna get caught cheating, right? ;)
+
+  :config
+  ;; keybindings that are active when copilot shows completions
+  (define-key copilot-mode-map (kbd "M-C-<next>") #'copilot-next-completion)
+  (define-key copilot-mode-map (kbd "M-C-<prior>") #'copilot-previous-completion)
+  (define-key copilot-mode-map (kbd "M-C-<right>") #'copilot-accept-completion-by-word)
+  (define-key copilot-mode-map (kbd "M-C-<down>") #'copilot-accept-completion-by-line)
+  ;; global keybindings
+  (define-key global-map (kbd "M-C-<return>") #'rk/copilot-complete-or-accept)
+  (define-key global-map (kbd "M-C-<escape>") #'rk/copilot-change-activation)
+
+
+  ;; Do copilot-quit when pressing C-g
+  (advice-add 'keyboard-quit :before #'rk/copilot-quit)
+
+  ;; complete by pressing right or tab but only when copilot completions are
+  ;; shown. This means we leave the normal functionality intact.
+  (advice-add 'right-char :around #'rk/copilot-complete-if-active)
+  (advice-add 'indent-for-tab-command :around #'rk/copilot-complete-if-active)
+
+  ;; deactivate copilot for certain modes
+  (add-to-list 'copilot-enable-predicates #'rk/copilot-enable-predicate)
+  (add-to-list 'copilot-disable-predicates #'rk/copilot-disable-predicate))
+
+(eval-after-load 'copilot
+  '(progn
+     ;; Note company is optional but given we use some company commands above
+     ;; we'll require it here. If you don't use it, you can remove all company
+     ;; related code from this file, copilot does not need it.
+     (require 'company)
+     (global-copilot-mode)))
+
+
+
+(add-hook 'org-mode-hook rk/copilot-enable-for-org)
+#+end_src
+*** copilot old
+    #+begin_src emacs-lisp
+:tangle ~/.emacs.d/config-perso-dell.el
+	  ;; A SUPPRIMER POUR CEUX QUI UTILISENT MA CONFIG:
+	  ;; Permet d'avoir github copilot dans emacs:
+	  ;; Source : https://github.com/zerolfx/copilot.el
+	  ;; Pour trouver le serveur node :
+	  ;; On crée un hook pour quand on est dans emacsclient:
+
+	      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+	  ;; IMPORTANT
+	  ;; CE TRUC PERMET DE DETECTER NODE pour copilot si on utilise emacsclient:
+	  ;;(use-package editorconfig :ensure t)
+	  ;; (use-package jsonrpc :ensure t)
+	  (if (daemonp)
+	      (add-hook 'after-make-frame-functions
+			(lambda (frame)
+			  (setenv "PATH" (concat "~/.nvm/versions/node/v18.16.0/bin:" (getenv "PATH")))
+			  (setq exec-path (append '("~/.nvm/versions/node/v18.16.0/bin") exec-path)))))
+	      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	  (add-to-list 'load-path "~/.emacs.d/copilot_pour_emacs/")
+	  (require 'copilot)
+	  (add-hook 'prog-mode-hook 'copilot-mode) ;; On active copilot dans tous les modes prog (python, js, etc)
+	  (add-hook 'org-mode-hook 'copilot-mode) ;; On active copilot dans ORG
+
+	  (customize-set-variable 'copilot-enable-predicates '(evil-insert-state-p))
+
+	  (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+	  (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+	  ;; On utilise nvm pour gérer les versions de node
+	  ;; Source:
+
+	  (when (memq window-system '(mac ns x))
+	    (exec-path-from-shell-initialize))
+
+	  ;; On active copilot dans org :
+
+	  ;; On rajoute un moyen de toggle le copilot mode:
+      (global-set-key (kbd "C-c c c") 'copilot-mode)
+      ;;(copilot-mode 1)
+
+    #+end_src
+
+
+
+

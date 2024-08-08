@@ -1,329 +1,126 @@
 :PROPERTIES:
-:ID:       a22dcb98-903d-44d2-8e82-4ddcd95d6325
+:ID:       a81fba79-8f18-4c4c-b8c9-c6a731148caa
 :END:
-#+title: Ma config emacs
+#+title: config emacs 2024
+#+PROPERTY: header-args:emacs-lisp :tangle ~/.emacs.d/system-crafters.el :mkdirp yes
 
-[[/home/kim/.emacs::258][.EMACS]]
 
-[[/home/kim/.emacs.d/config-perso.el][CONFIG PERSO emacs]]
-#+begin_src emacs-lisp 
-(load-file "/home/kim/.emacs.d/config-perso.el")
-#+end_src
 
-#+RESULTS:
-: t
-*** *SAUVER* la config emacs: [[id:f3f18585-dc83-4248-bb39-27b20587ff0b][Dépot useful stuff]]
-#+begin_src bash
-cp /home/kim/org-roam/20230715112804-ma_config_emacs.org /home/kim/Documents/useful_stuff_depot/config_emacs.org
+*** sauver la config
+[[id:f3f18585-dc83-4248-bb39-27b20587ff0b][Dépot useful stuff]]
+#+begin_src shell
+cp /home/kim/org-roam/20240808095838-config_emacs_system_crafters.org /home/kim/Documents/useful_stuff_depot/config_emacs.org
 cd /home/kim/Documents/useful_stuff_depot
 xterm -e git commit -a
 gnome-terminal -- /bin/sh -c "git push; exec bash"
 #+end_src
 
-** MELPA
-#+begin_src elisp :tangle ~/.emacs.d/config-perso.el
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/"))
-(package-initialize)
-
-;;(package-refresh-contents)
-#+end_src
-
 #+RESULTS:
 
-** [#A] use-package
-PERMET DE NE PAS AVOIR A INSTALLER LES PACKAGES MANUELLEMENT (ultra puissant)
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-;;>>>>>>>>>>>>>>
-;; USE PACKAGE: permet de ne pas avoir à installer les packages manuellement
-;; On vérifie que use-package est installé, sinon on l'installe:
-(if (not (package-installed-p 'use-package))
-    (progn
-      (package-refresh-contents)
-      (package-install 'use-package)))
-(require 'use-package)
-#+end_src
+* Welcome!
 
-*** [[id:5a09cf74-c575-4bb4-be55-617ad7ed1aa1][Remplacer require par use package!!!]]
-** Pratique
-*** [[https://github.com/abo-abo/hydra][HYDRA]]
-*** org download
-  #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-    ;;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    ;; Copy paste images: Package trop sick!!!!
+This is the configuration we've been building in the *Emacs From Scratch* series,
+  now written as an Org Mode document.
+  This file generates [[file:init.el][init.el]] which can be loaded by Emacs at startup.
 
-    (use-package org-download :ensure t)
+*NOTE:* If you run into any issues while using this configuration, please [[https://github.com/daviwil/emacs-from-scratch/issues/new][file an issue]] or send me an email at =david at systemcrafters.cc=.
 
-    ;; Drag-and-drop to `dired`
-    (add-hook 'dired-mode-hook 'org-download-enable)
+The following variables are used to tweak some of the configuration pieces for use in the live streams so you might need to adjust them for your local machine if you try to use this configuration directly.
 
-    #+end_src
-*** Org mode
-  #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-    ;;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-    ;; Org mode setup raccourcis:
-    ;; insertion d'image avec C-c i:
-    (add-hook 'org-mode-hook
-	      (lambda ()
-		(local-set-key (kbd "\C-c i") 'org-download-clipboard)))
-
-    (global-set-key (kbd "\C-c a") 'org-agenda)
-
-    ;; Org mode setup raccourcis:
-    (define-key global-map "\C-cl" 'org-store-link)
-    (define-key global-map "\C-ca" 'org-agenda)
-    (setq org-log-done t)
-
-;; org agenda at startup :
-;;(add-hook 'after-init-hook 'org-agenda-list)
-;;
-;;(setq initial-buffer-choice (lambda () (get-buffer-create "*Org Agenda*")))
-
-
-
-
-
-    #+end_src
-*** undo tree
-  #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-
-	  ;; Le undo tree broken
-(global-undo-tree-mode)
-  (use-package undo-tree :ensure t
-    :hook
-    (prog-mode . undo-tree-mode)
-    (org-mode . undo-tree-mode)
-    )
-  (setq undo-tree-visualizer-diff t)
-  (setq undo-tree-history-directory-alist
-        '(("." . "/home/kim/org-roam/undo_trees")))
-
-;; Un hook permet d'activer un truc dans un mode bien précis
-;; Par ex, ici j'active le focus mode à chq fois que je lance org mode
-
-;;(add-hook 'org-mode-hook 'my-org-mode-hook)
-    #+end_src
-*** crux, undo fu etc
-    #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-    (use-package crux :ensure t) ;;ridiculously useful extensions?? 
-
-    (use-package undo-fu :ensure t) ;;Permet de safe entre 2 sessions
-
-    (global-set-key (kbd "C-c F") 'crux-recentf-find-file) ;;POWERFUL
-
-
-    ;; Faire en sorte qu'il arrête de me demander si je suis d'accord pour executer
-    ;; (C'est casse couille)
-
-    (defun my-org-confirm-babel-evaluate (lang body)
-      (not (string= lang "python")))  ;don't ask if it's python
-    (setq org-confirm-babel-evaluate #'my-org-confirm-babel-evaluate)
-    #+end_src
-*** Multicurseurs
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-
-    ;; MULTICURSEURS
-    ;;(use-package evil-mc :ensure t)
-    ;;(global-evil-mc-mode 1) 
-#+end_src
-*** ivy
-- Complétion dans le terminal
-- 
 #+begin_src emacs-lisp
-;;:tangle ~/.emacs.d/config-perso.el
-;; IVY
-;; Charger Ivy et les packages connexes
-(ivy-mode 1)  ; Activer Ivy au démarrage d'Emacs
-(use-package ivy
-  :ensure t
-  :bind (("C-c C-r" . ivy-resume)
-	 ("M-y" . counsel-yank-pop)
-	 ("C-x b" . ivy-switch-buffer))
-  :config
-  ;; Définir les raccourcis clavier pour Ivy
 
-  ;; Afficher le nombre de correspondances trouvées dans la liste Ivy
-  (setq ivy-count-format "(%d/%d) ")
+;; NOTE: init.el is now generated from Emacs.org.  Please edit that file
+;;       in Emacs and init.el will be generated automatically!
 
-  ;; Utiliser la complétion verticale avec Ivy
-  (setq ivy-display-style 'fancy)
-  
-  ;; Configurez les raccourcis pour naviguer dans les options Ivy
-  (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
-  (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)
-  (define-key ivy-minibuffer-map (kbd "C-SPC") 'ivy-alt-done))
-
-;; Charger Counsel pour ajouter plus de fonctionnalités à Ivy
-(use-package counsel
-  :ensure t
-  :bind (;;("M-x" . counsel-M-x)         ; Utiliser Counsel pour M-x
-         ;;("C-x C-f" . counsel-find-file) ; Utiliser Counsel pour trouver un fichier
-         ("C-c g" . counsel-git)        ; Utiliser Counsel pour les commandes Git
-         ("C-c j" . counsel-git-grep)   ; Utiliser Counsel pour rechercher dans les fichiers Git
-         ("C-c k" . counsel-ag)         ; Utiliser Counsel pour ag (the silver searcher)
-         ("C-x l" . counsel-locate)))    ; Utiliser Counsel pour localiser des fichiers
-(use-package swiper
-  :ensure t
-  :bind (("C-s" . swiper))
-  ) 
-#+end_src
-
-*** copier chemin fichier 
-    #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-    ;; COPIER LE CHEMIN D'UN FICHIER: 
-
-
-    (defun copy-file-path ()
-      "Copy the full path of the current buffer to the clipboard."
-      (interactive)
-      (kill-new (buffer-file-name))
-      (message "Copied path: %s" (buffer-file-name)))
-
-    (global-set-key (kbd "C-c c p") 'copy-file-path)
-    #+end_src
-** [#A] HELM config
-:PROPERTIES:
-:ID:       32d4cc31-7231-46ff-9486-f4139488be7d
-:END:
-Rajouter un truc pour avoir les mêmes bindings que ivy pour naviguer (C-j, C-k
-et C-SPC sont  super pratiques)
-
-Je l'utilise pour :
-- Il détecte les chemins dans du plain texte
-- Il se souvient des dernières recherches
-- Il peut afficher la doc des fonctions dans M-x
-- 
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-    ;; HELM
-    (use-package helm
-    :ensure t
-    :bind
-    ("C-x C-f" . helm-find-files)
-    ("M-x" . helm-M-x)
-    ("C-x C-j" . helm-recentf)
-    ("M-s o" . helm-occur)
-    ("M-y" . helm-show-kill-ring)
-    ("C-S-s" . helm-multi-swoop-all)
-    ("M-i" . helm-multi-swoop)
-    ("M-s M-i" . helm-multi-swoop-all)
-
-    )
-(use-package swiper
-  :ensure t
-  :bind (("C-s" . swiper))
-  ) 
-
-    (helm-mode 1)
-
-
-    (setq org-roam-completion-system 'ivy)
-#+end_src
-
-#+RESULTS:
-: ivy
-
-*** Helm skip boring files
-Virer les undo tree des résultats de helm
-(Je l'ai pas mis)
-#+begin_src emacs-lisp 
-(custom-set-variables
- '(helm-ag-ignore-patterns '("*.~undo-tree~")))
-#+end_src
-*** problème helm bloqué history
-:PROPERTIES:
-:ID:       9a1b3124-ed4c-4c8f-babf-df50c1ba4be1
-:END:
-
-Faut utiliser helm-next-source : *C-o* et *M-o*
-
-    
-** Fast init
-#+begin_src elisp :tangle ~/.emacs.d/config-perso.el
-;;>>>>>>>>>>>>>>
-
-(setq inhibit-startup-echo-area-message "tychoish")
-;;(setq inhibit-startup-message 't)
-(setq initial-major-mode 'fundamental-mode)
-(setq initial-scratch-message 'nil)
+;; You will most likely need to adjust this font size for your system!
+(defvar efs/default-font-size 180)
+(defvar efs/default-variable-font-size 180)
 
 #+end_src
 
-** Esthétique
-*** Config 
-#+begin_src elisp :tangle ~/.emacs.d/config-perso.el
-  ;; Set up package.el to work with MELPA  -*- lexical-binding: t; -*-
-;; On enlève la barre de menu:
-(menu-bar-mode -1)
-;; On enlève la barre d'outils:
-(tool-bar-mode -1)
+* Tips for Use
 
-;;(mouse-avoidance-mode 'banish)
-#+end_src
+In this document I've added links in many places that lead you to documentation
+  for the various packages we use.
+  If you're looking at this file in Emacs, you can put your cursor on a link and press =C-c C-o= or run =M-x org-open-at-point= to open the link in your web browser.
 
-#+RESULTS:
+* Package System Setup
 
-*** Police 
-  #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-  (add-to-list 'default-frame-alist
-	       '(font . "DejaVu Sans Mono-12"))
-  ;; CHANGER TAILLE POLICE ICI
-  #+end_src
+Emacs has a built in package manager but it doesn't make it easy to
+  automatically install packages on a new system the first time you pull down
+  your configuration.
+  [[https://github.com/jwiegley/use-package][use-package]] is a really helpful package used in this configuration to make it a lot easier to automate the installation and configuration of everything else we use.
 
-  #+RESULTS:
-  : ((font . DejaVu Sans Mono-12))
-
-*** EVIL
-#+begin_src elisp :tangle ~/.emacs.d/config-perso.el
-    ;; Enable Evil
-    (use-package evil
-    :ensure t
-    :init (setq evil-want-C-i-jump nil);; permet d'avoir tab 
-    )
-
-  (evil-mode 1)
-#+end_src
-*** hook background black
 #+begin_src emacs-lisp
-:tangle ~/.emacs.d/config-perso.el
-;; Oncrée un hook pour server-visits-mode:
 
-(add-hook 'focus-in-hook 'server-visits-hook-custom-actions)
-;; Ce truc est un hack pour que le background soit noir quand on ouvre un fichier avec emacsclient, il lance les actions quand on focus dans le buffer:
+  ;; Initialize package sources
+  (require 'package)
 
+  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                           ("org" . "https://orgmode.org/elpa/")
+                           ("elpa" . "https://elpa.gnu.org/packages/")))
 
-(defun server-visits-hook-custom-actions ()
-  ;; On vérifie que le theme est spacemacs-dark:
-  (if (eq (car custom-enabled-themes) 'spacemacs-dark)
-  ;; car custom-enabled-themes est une liste, on prend le premier element:
-  ;; On met le background en noir:
-  (set-background-color "black")
-;; Sinon on met un message:
-(message "Background color not set to black")))
-(set-background-color "black")
-#+end_src
-*** Org bullets
-:PROPERTIES:
-:ID:       82c6d96c-f00b-4529-a91c-0a37ba0e0a44
-:END:
-#+begin_src emacs-lisp :tangle  ~/.emacs.d/config-perso.el
-(use-package org-bullets
-  :ensure t
-  :config
-  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
-;;(use-package doom-themes)
+  (package-initialize)
+  (unless package-archive-contents
+    (package-refresh-contents))
+
+    ;; Initialize use-package on non-Linux platforms
+  (unless (package-installed-p 'use-package)
+    (package-install 'use-package))
+
+  (require 'use-package)
+  (setq use-package-always-ensure t)
 
 #+end_src
 
-Ce package est =vraiment agréable=
-Il permet d'avoir des bullets propres sur mes titres org
+* Basic UI Configuration
 
-*** org-appear ( gras, italique, ect) puces helena
-:PROPERTIES:
-:ID:       ec7ad35e-71ea-402e-be89-de9d357739a6
-:END:
-#+begin_src elisp  :tangle ~/.emacs.d/config-perso.el
+This section configures basic UI settings that remove unneeded elements to make Emacs look a lot more minimal and modern.  If you're just getting started in Emacs, the menu bar might be helpful so you can remove the =(menu-bar-mode -1)= line if you'd like to still see that.
+
+#+begin_src emacs-lisp
+
+  (setq inhibit-startup-message t)
+
+  (scroll-bar-mode -1)        ; Disable visible scrollbar
+  (tool-bar-mode -1)          ; Disable the toolbar
+  (tooltip-mode -1)           ; Disable tooltips
+  (set-fringe-mode 10)        ; Give some breathing room
+
+  (menu-bar-mode -1)            ; Disable the menu bar
+
+  ;; Set up the visible bell
+  (setq visible-bell t) ;; fait du bruit?
+
+  (column-number-mode)
+  (global-display-line-numbers-mode t)
+
+  ;; Disable line numbers for some modes
+  (dolist (mode '(org-mode-hook
+                  term-mode-hook
+                  shell-mode-hook
+                        treemacs-mode-hook
+                  eshell-mode-hook))
+    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+#+end_src
+** Font Configuration
+
+I am using the [[https://github.com/tonsky/FiraCode][Fira Code]] and [[https://fonts.google.com/specimen/Cantarell][Cantarell]] fonts for this configuration which will more than likely need to be installed on your machine.  Both can usually be found in the various Linux distro package managers or downloaded from the links above.
+
+#+begin_src emacs-lisp
+
+(set-face-attribute 'default nil :font "Fira Code Retina" :height efs/default-font-size)
+
+;; Set the fixed pitch face
+(set-face-attribute 'fixed-pitch nil :font "Fira Code Retina" :height efs/default-font-size)
+
+;; Set the variable pitch face
+(set-face-attribute 'variable-pitch nil :font "Cantarell" :height efs/default-variable-font-size :weight 'regular)
+
+#+end_src
+
+** org-appear ( gras, italique, ect) puces helena
+#+begin_src emacs-lisp  
   ;;------------------------------------------------------------
   ;; org-appear
   (setq org-emphasis-alist
@@ -340,431 +137,511 @@ Il permet d'avoir des bullets propres sur mes titres org
 #+RESULTS:
 : t
 
-** Code en général
-*** Flycheck
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
+* Keybinding Configuration
 
+This configuration uses [[https://evil.readthedocs.io/en/latest/index.html][evil-mode]] for a Vi-like modal editing experience.
+[[https://github.com/noctuid/general.el][general.el]] is used for easy keybinding configuration that integrates well with
+which-key.
+[[https://github.com/emacs-evil/evil-collection][evil-collection]] is used to automatically configure various Emacs modes with Vi-like keybindings for evil-mode.
 
-    ;; FLYCHECK: permet d'avoir un retour en temps réel sur les erreurs de syntaxe: (comme dans VSCode)
+#+begin_src emacs-lisp
 
-    (use-package flycheck :ensure t)
+  ;; Make ESC quit prompts
+  (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
-    (defun setup-flycheck-python ()
-      (global-set-key (kbd "C-c c f") 'flycheck-mode)
-      (setq flycheck-python-flake8-executable "/usr/bin/python3.8") ; Remplacez par votre exécutable Python
-      (setq flycheck-python-pycompile-executable "/usr/bin/python3.8") ; Remplacez par votre exécutable Python
-      (setq flycheck-python-pylint-executable "/usr/bin/python3.8") ; Remplacez par votre exécutable Python
-      )
+  (use-package general
+    :config
+    (general-create-definer rune/leader-keys
+      :keymaps '(normal insert visual emacs)
+      :prefix "SPC"
+      :global-prefix "C-SPC")
 
-    (add-hook 'python-mode-hook 'setup-flycheck-python) ;; inutile car je l'active en global:
-#+end_src
-*** Python
-**** python restart
-    #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-    ;; On rajoute un hook pour avoir le raccourci C-c ! pour changer d'interpreteur python:
+    (rune/leader-keys
+      "t"  '(:ignore t :which-key "toggles")
+      "tt" '(counsel-load-theme :which-key "choose theme")))
 
-    (setq python-shell-interpreter "/usr/bin/python3.8") ;; IMPORTANT: On et l'interpréteur python pour les pb avec matplotlib
-    (defun restart-python ()
-      (interactive)
-      (kill-buffer "*Python*")
-      (run-python nil nil nil)
-      (switch-to-buffer-other-window "*Python*")
-      (other-window 1))
+  (use-package evil
+    :init
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    (setq evil-want-C-u-scroll t)
+    (setq evil-want-C-i-jump nil)
+    :config
+    (evil-mode 1)
+    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+    (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
 
-    (add-hook 'python-mode-hook
-	      (lambda ()
-		(local-set-key (kbd "M-p") 'restart-python)))
-    #+end_src
+    ;; Use visual line motions even outside of visual-line-mode buffers
+    (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+    (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
-    #+RESULTS:
-    | elpy-mode | my/python-mode-hook | jedi:setup | my-python-mode-hook | lsp | anaconda-eldoc-mode | anaconda-mode | (lambda nil (local-set-key (kbd M-p) 'restart-python)) | setup-flycheck-python |
+    (evil-set-initial-state 'messages-buffer-mode 'normal)
+    (evil-set-initial-state 'dashboard-mode 'normal))
 
-**** Assitances python
-    #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-    (use-package anaconda-mode :ensure t)
-    (use-package company-anaconda :ensure t)
-    (add-hook 'python-mode-hook 'anaconda-mode)
-    (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
-    (add-to-list 'company-backends 'company-anaconda)
-    ;; Maintenant, lorsque vous ouvrez un fichier Python dans Emacs, anaconda-mode sera activé et vous pourrez profiter de ses fonctionnalités telles que la navigation intelligente, la complétion automatique et la documentation intégrée.
-    ;; 
-    ;; N'oubliez pas que anaconda-mode peut nécessiter des packages Python supplémentaires pour fonctionner correctement. Assurez-vous d'installer les dépendances requises dans votre environnement Anaconda avant d'utiliser anaconda-mode.
-
-
-
-    ;; On rajoute des raccourcis pratiques pour anaconda:
-    ;; anaconda-mode-show-doc:
-
-    (global-set-key (kbd "C-c d") 'anaconda-mode-show-doc)
-    (global-set-key (kbd "C-c e") 'anaconda-mode-find-definitions) ;;INCROYABLE
-    ;;(global-set-key (kbd "C-c r") 'anaconda-mode-rename) ;;N'existe pas
-    #+end_src
-*** C++
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-
-    ;; Rajouter un raccourci specifique au C++:
-    ;;(define-key c++-mode-map "\C-ct" 'some-function-i-want-to-call)
-
-
-    (setq-default compile-command "g++ -std=c++11 -o %s %s && %s") ; Set the default compilation and run command for C++
-
-    (defun my-compile-and-run ()
-      "Compile and run the current C++ buffer."
-      (interactive)
-      (if (buffer-file-name)
-	  (progn
-	    (setq-local compile-command
-			(format compile-command
-				(file-name-sans-extension (buffer-file-name))
-				(buffer-file-name)
-				(file-name-sans-extension (buffer-file-name))))
-	    (compile compile-command))
-	(message "Buffer is not visiting a file.")))
-
-    (global-set-key (kbd "<f5>") 'my-compile-and-run) ; Bind a key to the compile and run command
-#+end_src
-*** treemacs
-Je m'en sers surtout quand je fais de la programmation orientée objet
-Encore que helm imenu est quand même *bien plus utile*
-
-Go pas s'en servir
-
-    #+begin_src emacs-lisp
-    ;;:tangle ~/.emacs.d/config-perso.el
-
-	;; treemacs :
-
-	(use-package treemacs :ensure t
-	  :hook
-	  (prog-mode . treemacs)
-
-	  ) ;;Attention j'utilise treemacs-evil
-	;; On active treemacs :
-
-	;; On va rajouter un raccourci pour le terminal:
-
-
-	;; On rajoute un hook qui active le lsp mode en dart :
-
-
-	;; PENSER A FAIRE eval-buffer au lieu de redem!!!
-    #+end_src
-*** flutter
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-    ;; FLUTTER ET DART : 
-
-    ;; On va activer imenu :
-
-    (add-hook 'dart-mode-hook 'imenu-add-menubar-index)
-
-
-
-    ;; LSP pour flutter et dart:
-
-    (use-package lsp-mode :ensure t)
-    (add-hook 'dart-mode-hook 'lsp-mode) 
-    (add-hook 'python-mode-hook 'lsp)
-    (use-package lsp-dart :ensure t)
-
-    ;; On rajoute un truc pour pouvoir executer dudart dans babel:
-
-    (use-package ob-dart :ensure t)
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((dart . t)))
-
-    ;; On rajoute un hook pour avoir le raccourci C-c C-c pour executer un fichier dart :
-    ;; ça executera le fichier dart dans le terminal et ça garde le terminal ouvert avec un read -n 1 -s -r -p "Press any key to continue" à la fin:
-    ;; Le tout dans un gnome-terminal:
-
-
-;; On lance un terminal avec un read -n 1 -s -r -p "Press any key to continue" à la fin:
-    (defun dart-run ()
-      "Run the current file in a terminal."
-      (interactive)
-      (let ((proc-name "dart-run"))
-	(when (get-buffer proc-name)
-	  (kill-buffer proc-name))
-	(start-process proc-name proc-name "xterm" "-hold" "-e" "bash" "-c" (concat "dart " (buffer-file-name) " && read -n 1 -s -r -p \"Press any key to continue\""))))
-
-
-    (add-hook 'dart-mode-hook
-	      ;;(lambda () (local-set-key (kbd "C-c C-c") 'dart-run)) ;; à activer pour du dart en shell
-	      (lambda () (local-set-key (kbd "C-c C-c") 'flutter-run-or-hot-reload)) ;; à activer pour du flutter
-
-	      )
-
-
-    ;; On rajoute un raccourci pour le terminal, C-c C-p comme pour python:
-
+  (use-package evil-collection
+    :after evil
+    :config
+    (evil-collection-init))
 
 #+end_src
-*** bash
 
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-    ;; BASH :
+* UI Configuration
+** Command Log Mode
 
-    ;; On va activer imenu :
+[[https://github.com/lewang/command-log-mode][command-log-mode]] is useful for displaying a panel showing each key binding you use in a panel on the right side of the frame.  Great for live streams and screencasts!
 
-    (add-hook 'sh-mode-hook 'imenu-add-menubar-index)
+#+begin_src emacs-lisp
 
-    ;; On va rajouter un raccourci pour le terminal:
+(use-package command-log-mode)
 
-    (defun bash-run ()
-      "Run the current file in a terminal."
-      (interactive)
-      (let ((proc-name "bash-run"))
-	(when (get-buffer proc-name)
-	  (kill-buffer proc-name))
-	(start-process proc-name proc-name "gnome-terminal" "-e" (concat (buffer-file-name) " && read -n 1 -s -r -p \"Press any key to continue\""))))
-
-    (add-hook 'sh-mode-hook
-	      (lambda () (local-set-key (kbd "C-c C-c") 'bash-run))
-	      )
 #+end_src
 
-** [[id:31c9e4de-d2b5-4ba1-834a-516bea81ec0a][elpy]] 
-:PROPERTIES:
-:ID:       1dce59b9-79a3-4c3e-bca0-87a305e8a358
-:END:
-[[https://elpy.readthedocs.io/en/latest/quickstart.html][Basic keybindings]]
+** Color Theme
 
-Complétion: C-M-i
+[[https://github.com/hlissner/emacs-doom-themes][doom-themes]] is a great set of themes with a lot of variety and support for many
+  different Emacs modes.
+  Taking a look at the [[https://github.com/hlissner/emacs-doom-themes/tree/screenshots][screenshots]] might help you decide which one you like
+  best.
+  You can also run =M-x counsel-load-theme= to choose between them easily.
 
-C-c C-k (elpy-shell-kill)
-              Kill the associated python shell.
-C-c C-K (elpy-shell-kill-all)
-              Kill all active python shells.
-*** [[https://manpages.ubuntu.com/manpages/focal/man1/elpy.1.html][FONCTIONNALITES ELPY]]
-:PROPERTIES:
-:ID:       603a8efb-8f93-47cf-9aed-df8291f574de
-:END:
-*** config elpy
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-    ;; PYTHON CONFIGURATION
-      ;; --------------------------------------
-(use-package elpy
-  :ensure t
-  :init
-  (elpy-enable))
+#+begin_src emacs-lisp
+(setq custom-safe-themes t) ;; evite qu'il demande si c'est safe à chq fois
+(use-package spacemacs-theme
+  :init (load-theme 'spacemacs-dark t))
 
-  (use-package flycheck
-    :ensure t
-    :hook
-    (prog-mode . flycheck-mode)
-    )
-
-  ;; Load up elpy
-  (setq elpy-rpc-python-command "/usr/bin/python3.8")
-
-  ;;(use-package jedi :ensure t)
-  (add-hook 'python-mode-hook 'jedi:setup)
-  (define-key python-mode-map (kbd "M-.") 'jedi:goto-definition)
-  (setq jedi:complete-on-dot t)
-
-    ;; use flycheck not flymake with elpy
-  (when (require 'flycheck nil t)
-  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-      (add-hook 'elpy-mode-hook 'flycheck-mode)
-      (setq flycheck-python-pylint-executable "pylint3")
-      (setq flycheck-python-flake8-executable "flake8"))
 #+end_src
-** TODO [#A] Company : autocomplete!! CEST BROKEN
 
-C'EST BROKEN !!!!!!
+** Better Modeline
 
-ça fonctionne enbash!!!!!
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-(use-package company
-  :ensure t
+[[https://github.com/seagle0128/doom-modeline][doom-modeline]] is a very attractive and rich (yet still minimal) mode line configuration for Emacs.  The default configuration is quite good but you can check out the [[https://github.com/seagle0128/doom-modeline#customize][configuration options]] for more things you can enable or disable.
+
+*NOTE:* The first time you load your configuration on a new machine,
+you'll need to run *M-x all-the-icons-install-fonts* so that mode line icons display correctly.
+
+Faut aussi lancer *nerd-icons-install-fonts*
+
+#+begin_src emacs-lisp
+
+(use-package all-the-icons)
+(use-package nerd-icons)
+
+(use-package doom-modeline
+  :init (doom-modeline-mode 1)
+  :custom ((doom-modeline-height 15)))
+
+#+end_src
+
+** Which Key
+
+[[https://github.com/justbur/emacs-which-key][which-key]] is a useful UI panel that appears when you start pressing any key
+  binding in Emacs to offer you all possible completions for the prefix.
+  For example, if you press =C-c= (hold control and press the letter =c=),
+  a panel will appear at the bottom of the frame displaying all of the bindings
+  under that prefix and which command they run.
+  This is very useful for learning the possible key bindings in the mode of your current buffer.
+
+#+begin_src emacs-lisp
+
+(use-package which-key
+  :init (which-key-mode)
+  :diminish which-key-mode
   :config
-  (setq company-idle-delay 0.2)
-  (setq company-minimum-prefix-length 1)
-  (global-company-mode t))
-
-;; company-jedi:
-#+end_src
-
-
-#+begin_src bash
-sudo pip3 install virtualenv
-#+end_src
-
-** Divers
-*** imenu obsolète
-    #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-    ;; Permet d'aller à la définition d'une fonction :
-    ;;(use-package imenu :ensure t)
-    ;;(add-hook 'python-mode-hook 'imenu-add-menubar-index)
-    ;;(global-set-key (kbd "C-c i") 'imenu);;TROP BIEN
-    ;; Permet de par exemple lister toutes les fonctions d'une classe et de se balader
-    ;; aisément dans le code
-    #+end_src
-*** Trucs utile code
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-
-    ;; CODE REFACTORING:
-
-    (define-key prog-mode-map (kbd "C-c c r") 'emr-show-refactor-menu)
-
-
-    ;; magit :
-    (use-package magit :ensure t)
-    ;;(global-set-key (kbd "C-c m") 'magit-status)
-    ;;(global-set-key (kbd "C-c m c") 'magit-commit-create)
-
-
-
-    ;; projectile:
-    (use-package projectile :ensure t
-:bind ("C-c p" . projectile-command-map))
-(projectile-mode +1)
-
-    ;;(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-#+end_src
-
-#+RESULTS:
-: t
-
-*** org present (presentations) pas très utile
-    #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-    ;; ORG PRESENT:
-    (add-to-list 'load-path "~/path/to/org-present")
-    (autoload 'org-present "org-present" nil t)
-
-    (add-hook 'org-present-mode-hook
-	      (lambda ()
-		(org-present-big)
-		(org-display-inline-images)))
-
-    (add-hook 'org-present-mode-quit-hook
-	      (lambda ()
-		(org-present-small)
-		(org-remove-inline-images)))
-
-    ;; on rajoute une fonction qui lance un fichier .org au hasard dans le dossier org-roam:
-    #+end_src
-*** random note
-En fait y'avait une fonction intégrée
-    #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-    (global-set-key (kbd "C-c o r") 'org-roam-node-random)
-    #+end_src
-*** copilot  
-    #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-    ;; A SUPPRIMER POUR CEUX QUI UTILISENT MA CONFIG:
-    ;; Permet d'avoir github copilot dans emacs:
-    ;; Source : https://github.com/zerolfx/copilot.el
-    ;; Pour trouver le serveur node :
-    ;; On crée un hook pour quand on est dans emacsclient:
-
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-    ;; IMPORTANT
-    ;; CE TRUC PERMET DE DETECTER NODE pour copilot si on utilise emacsclient:
-    (if (daemonp)
-	(add-hook 'after-make-frame-functions
-		  (lambda (frame)
-		    (setenv "PATH" (concat "~/.nvm/versions/node/v18.16.0/bin:" (getenv "PATH")))
-		    (setq exec-path (append '("~/.nvm/versions/node/v18.16.0/bin") exec-path)))))
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    (add-to-list 'load-path "~/.emacs.d/copilot_pour_emacs/")
-    (require 'copilot)
-    (add-hook 'prog-mode-hook 'copilot-mode) ;; On active copilot dans tous les modes prog (python, js, etc)
-    (add-hook 'org-mode-hook 'copilot-mode) ;; On active copilot dans ORG
-
-    (customize-set-variable 'copilot-enable-predicates '(evil-insert-state-p))
-
-    (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
-    (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
-    ;; On utilise nvm pour gérer les versions de node
-    ;; Source:
-
-    (when (memq window-system '(mac ns x))
-      (exec-path-from-shell-initialize))
-
-    ;; On active copilot dans org :
-
-    ;; On rajoute un moyen de toggle le copilot mode:
-(global-set-key (kbd "C-c c c") 'copilot-mode)
-;;(copilot-mode 1)
-
-    #+end_src
-** Lisibilité
-[[id:21cb7494-7388-42b2-9d17-beab5a570853][Bionic reading]]
-*** Focus mode
- #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-;;(defun my-org-mode-hook()
-;;   (focus-mode 1))
-
- ;; FOCUS ACTIVE TT LE TEMPS:
-
-(global-set-key (kbd "C-c f") 'focus-change-thing);;Lancer C-c f permet de changer le thing de focus
- #+end_src
- 
-
-*** Folder le code dans emacs
-:PROPERTIES:
-:ID:       d76a9d0d-7733-4c5d-94ea-9834cf7cf393
-:END:
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-  ;;>>>>>>>>>>>>>>
-  ;; POUR POUVOIR FOLDER LE CODE:
-  (add-hook 'prog-mode-hook #'hs-minor-mode)
-  ;; raccourcis :
-
-;;  (global-set-key (kbd "C-c h") 'hs-hide-block)
-;;  (global-set-key (kbd "C-c s") 'hs-show-block)
-  (global-set-key (kbd "C-c t") 'hs-toggle-hiding)
-  (global-set-key (kbd "C-c h") 'hs-hide-all)
+  (setq which-key-idle-delay 1))
 
 #+end_src
-** Org mode et roam
-*** pb tab org mode
 
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-    ;; Probleme de merde tab
-    ;;(global-set-key (kbd "<tab>") 'org-cycle)
-    ;; C'est mieux avec un hook:
+** Ivy and Counsel
+
+[[https://oremacs.com/swiper/][Ivy]] is an excellent completion framework for Emacs.  It provides a minimal yet powerful selection menu that appears when you open files, switch buffers, and for many other tasks in Emacs.  Counsel is a customized set of commands to replace `find-file` with `counsel-find-file`, etc which provide useful commands for each of the default completion commands.
+
+[[https://github.com/Yevgnen/ivy-rich][ivy-rich]] adds extra columns to a few of the Counsel commands to provide more information about each item.
+
+#+begin_src emacs-lisp
+
+  (use-package ivy
+    :diminish
+    :bind (("C-s" . swiper)
+	   :map ivy-minibuffer-map
+	   ("TAB" . ivy-alt-done)
+	   ("C-l" . ivy-alt-done)
+	   ("C-j" . ivy-next-line)
+	   ("C-k" . ivy-previous-line)
+	   :map ivy-switch-buffer-map
+	   ("C-k" . ivy-previous-line)
+	   ("C-l" . ivy-done)
+	   ("C-d" . ivy-switch-buffer-kill)
+	   :map ivy-reverse-i-search-map
+	   ("C-k" . ivy-previous-line)
+	   ("C-d" . ivy-reverse-i-search-kill))
+    :config
+    (ivy-mode 1))
+
+  (use-package ivy-rich
+    :init
+    (ivy-rich-mode 1))
+
+  (use-package counsel
+    :bind (("C-M-j" . 'counsel-switch-buffer)
+	   ("M-y" . 'counsel-yank-pop)
+	   :map minibuffer-local-map
+	   ("C-r" . 'counsel-minibuffer-history))
+    :config
+    (counsel-mode 1))
+
+
+#+end_src
+
+** Helpful Help Commands
+
+[[https://github.com/Wilfred/helpful][Helpful]] adds a lot of very helpful (get it?) information to Emacs' =describe-= command buffers.  For example, if you use =describe-function=, you will not only get the documentation about the function, you will also see the source code of the function and where it gets used in other places in the Emacs configuration.  It is very useful for figuring out how things work in Emacs.
+
+#+begin_src emacs-lisp
+
+  (use-package helpful
+    :custom
+    (counsel-describe-function-function #'helpful-callable)
+    (counsel-describe-variable-function #'helpful-variable)
+    :bind
+    ([remap describe-function] . counsel-describe-function)
+    ([remap describe-command] . helpful-command)
+    ([remap describe-variable] . counsel-describe-variable)
+    ([remap describe-key] . helpful-key))
+
+#+end_src
+
+** Text Scaling
+
+This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to design a transient key binding for quickly adjusting the scale of the text on screen.  We define a hydra that is bound to =C-s t s= and, once activated, =j= and =k= increase and decrease the text scale.  You can press any other key (or =f= specifically) to exit the transient key map.
+
+#+begin_src emacs-lisp
+
+  (use-package hydra)
+
+  (defhydra hydra-text-scale (:timeout 4)
+    "scale text"
+    ("j" text-scale-increase "in")
+    ("k" text-scale-decrease "out")
+    ("f" nil "finished" :exit t))
+
+  (rune/leader-keys
+    "ts" '(hydra-text-scale/body :which-key "scale text"))
+
+#+end_src
+
+* Org Mode
+
+[[https://orgmode.org/][Org Mode]] is one of the hallmark features of Emacs.  It is a rich document editor, project planner, task and time tracker, blogging engine, and literate coding utility all wrapped up in one package.
+
+** Better Font Faces
+
+The =efs/org-font-setup= function configures various text faces to tweak the sizes of headings and use variable width fonts in most cases so that it looks more like we're editing a document in =org-mode=.  We switch back to fixed width (monospace) fonts for code blocks and tables so that they display correctly.
+
+#+begin_src emacs-lisp
+
+  (defun efs/org-font-setup ()
+    ;; Replace list hyphen with dot
+    (font-lock-add-keywords 'org-mode
+                            '(("^ *\\([-]\\) "
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+    ;; Set faces for heading levels
+    (dolist (face '((org-level-1 . 1.2)
+                    (org-level-2 . 1.1)
+                    (org-level-3 . 1.05)
+                    (org-level-4 . 1.0)
+                    (org-level-5 . 1.1)
+                    (org-level-6 . 1.1)
+                    (org-level-7 . 1.1)
+                    (org-level-8 . 1.1)))
+      (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+
+    ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+    (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+    (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+
+#+end_src
+
+** Basic Config
+
+This section contains the basic configuration for =org-mode= plus the configuration for Org agendas and capture templates.  There's a lot to unpack in here so I'd recommend watching the videos for [[https://youtu.be/VcgjTEa0kU4][Part 5]] and [[https://youtu.be/PNE-mgkZ6HM][Part 6]] for a full explanation.
+
+**** original 
+#+begin_src emacs-lisp :tangle no
+
+  (defun efs/org-mode-setup ()
+    (org-indent-mode)
+    (variable-pitch-mode 1)
+    (visual-line-mode 1))
+
+  (use-package org
+    :hook (org-mode . efs/org-mode-setup)
+    :config
+    (setq org-ellipsis " ▾")
+
+    (setq org-agenda-start-with-log-mode t)
+    (setq org-log-done 'time)
+    (setq org-log-into-drawer t)
+
+    (setq org-agenda-files
+          '("~/Projects/Code/emacs-from-scratch/OrgFiles/Tasks.org"
+            "~/Projects/Code/emacs-from-scratch/OrgFiles/Habits.org"
+            "~/Projects/Code/emacs-from-scratch/OrgFiles/Birthdays.org"))
+
+    (require 'org-habit)
+    (add-to-list 'org-modules 'org-habit)
+    (setq org-habit-graph-column 60)
+
+    (setq org-todo-keywords
+      '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+        (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+
+    (setq org-refile-targets
+      '(("Archive.org" :maxlevel . 1)
+        ("Tasks.org" :maxlevel . 1)))
+
+    ;; Save Org buffers after refiling!
+    (advice-add 'org-refile :after 'org-save-all-org-buffers)
+
+    (setq org-tag-alist
+      '((:startgroup)
+         ; Put mutually exclusive tags here
+         (:endgroup)
+         ("@errand" . ?E)
+         ("@home" . ?H)
+         ("@work" . ?W)
+         ("agenda" . ?a)
+         ("planning" . ?p)
+         ("publish" . ?P)
+         ("batch" . ?b)
+         ("note" . ?n)
+         ("idea" . ?i)))
+
+    ;; Configure custom agenda views
+    (setq org-agenda-custom-commands
+     '(("d" "Dashboard"
+       ((agenda "" ((org-deadline-warning-days 7)))
+        (todo "NEXT"
+          ((org-agenda-overriding-header "Next Tasks")))
+        (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+
+      ("n" "Next Tasks"
+       ((todo "NEXT"
+          ((org-agenda-overriding-header "Next Tasks")))))
+
+      ("W" "Work Tasks" tags-todo "+work-email")
+
+      ;; Low-effort next actions
+      ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
+       ((org-agenda-overriding-header "Low Effort Tasks")
+        (org-agenda-max-todos 20)
+        (org-agenda-files org-agenda-files)))
+
+      ("w" "Workflow Status"
+       ((todo "WAIT"
+              ((org-agenda-overriding-header "Waiting on External")
+               (org-agenda-files org-agenda-files)))
+        (todo "REVIEW"
+              ((org-agenda-overriding-header "In Review")
+               (org-agenda-files org-agenda-files)))
+        (todo "PLAN"
+              ((org-agenda-overriding-header "In Planning")
+               (org-agenda-todo-list-sublevels nil)
+               (org-agenda-files org-agenda-files)))
+        (todo "BACKLOG"
+              ((org-agenda-overriding-header "Project Backlog")
+               (org-agenda-todo-list-sublevels nil)
+               (org-agenda-files org-agenda-files)))
+        (todo "READY"
+              ((org-agenda-overriding-header "Ready for Work")
+               (org-agenda-files org-agenda-files)))
+        (todo "ACTIVE"
+              ((org-agenda-overriding-header "Active Projects")
+               (org-agenda-files org-agenda-files)))
+        (todo "COMPLETED"
+              ((org-agenda-overriding-header "Completed Projects")
+               (org-agenda-files org-agenda-files)))
+        (todo "CANC"
+              ((org-agenda-overriding-header "Cancelled Projects")
+               (org-agenda-files org-agenda-files)))))))
+
+    (setq org-capture-templates
+      `(("t" "Tasks / Projects")
+        ("tt" "Task" entry (file+olp "~/Projects/Code/emacs-from-scratch/OrgFiles/Tasks.org" "Inbox")
+             "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+
+        ("j" "Journal Entries")
+        ("jj" "Journal" entry
+             (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
+             "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
+             ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
+             :clock-in :clock-resume
+             :empty-lines 1)
+        ("jm" "Meeting" entry
+             (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
+             "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
+             :clock-in :clock-resume
+             :empty-lines 1)
+
+        ("w" "Workflows")
+        ("we" "Checking Email" entry (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
+             "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+
+        ("m" "Metrics Capture")
+        ("mw" "Weight" table-line (file+headline "~/Projects/Code/emacs-from-scratch/OrgFiles/Metrics.org" "Weight")
+         "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)))
+
+    (define-key global-map (kbd "C-c j")
+      (lambda () (interactive) (org-capture nil "jj")))
+
+    (efs/org-font-setup))
+
+#+end_src
+
+**** mon truc
+
+  #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
+    ;;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    ;; Org mode setup raccourcis:
+    ;; insertion d'image avec C-c i:
     (add-hook 'org-mode-hook
 	      (lambda ()
-		(local-set-key (kbd "<tab>") 'org-cycle)))
+		(local-set-key (kbd "\C-c i") 'org-download-clipboard)))
+
+    (global-set-key (kbd "\C-c a") 'org-agenda)
+
+    ;; Org mode setup raccourcis:
+    (define-key global-map "\C-cl" 'org-store-link)
+    (define-key global-map "\C-ca" 'org-agenda)
+    (setq org-log-done t)
+
+
+    (org-agenda-files "~/.agenda_files")
+    #+end_src
+*** Nicer Heading Bullets
+
+[[https://github.com/sabof/org-bullets][org-bullets]] replaces the heading stars in =org-mode= buffers with nicer looking characters that you can control.  Another option for this is [[https://github.com/integral-dw/org-superstar-mode][org-superstar-mode]] which we may cover in a later video.
+
+#+begin_src emacs-lisp
+
+  (use-package org-bullets
+    :after org
+    :hook (org-mode . org-bullets-mode)
+    :custom
+    (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
 #+end_src
-*** org roam 
-**** internal links org roam
-:PROPERTIES:
-:ID:       b3481ecb-5c93-41dc-b517-1072bee13a67
-:END:
+
+*** Center Org Buffers
+
+We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]] to center =org-mode= buffers for a more pleasing writing experience as it centers the contents of the buffer horizontally to seem more like you are editing a document.  This is really a matter of personal preference so you can remove the block below if you don't like the behavior.
+
+#+begin_src emacs-lisp
+
+  (defun efs/org-mode-visual-fill ()
+    (setq visual-fill-column-width 130
+          visual-fill-column-center-text t)
+    (visual-fill-column-mode 1))
+
+  (use-package visual-fill-column
+    :hook (org-mode . efs/org-mode-visual-fill))
+
+#+end_src
+
+** Configure Babel Languages
+To execute or export code in =org-mode= code blocks,
+you'll need to set up =org-babel-load-languages= for each language you'd like to use.
+[[https://orgmode.org/worg/org-contrib/babel/languages.html][This page]] documents all of the languages that you can use with =org-babel=.
+
+#+begin_src emacs-lisp
+
+  (org-babel-do-load-languages
+    'org-babel-load-languages
+    '((emacs-lisp . t)
+      (shell .t)
+      (python . t)))
+
+  (push '("conf-unix" . conf-unix) org-src-lang-modes)
+
+#+end_src
+
+** Structure Templates
+
+Org Mode's [[https://orgmode.org/manual/Structure-Templates.html][structure templates]] feature enables you to quickly insert code blocks into your Org files in combination with =org-tempo= by typing =<= followed by the template name like =el= or =py= and then press =TAB=.  For example, to insert an empty =emacs-lisp= block below, you can type =<el= and press =TAB= to expand into such a block.
+
+You can add more =src= block templates below by copying one of the lines and changing the two strings at the end, the first to be the template name and the second to contain the name of the language [[https://orgmode.org/worg/org-contrib/babel/languages.html][as it is known by Org Babel]].
+
+#+begin_src emacs-lisp
+
+  ;; This is needed as of Org 9.2
+  (require 'org-tempo)
+
+  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("py" . "src python"))
+
+#+end_src
+
+** Auto-tangle Configuration Files
+
+This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-config= gets executed each time such a buffer gets saved.  This function checks to see if the file being saved is the Emacs.org file you're looking at right now, and if so, automatically exports the configuration here to the associated output files.
+
+#+begin_src emacs-lisp
+
+  ;; Automatically tangle our Emacs.org config file when we save it
+  (defun efs/org-babel-tangle-config ()
+    (when (string-equal (buffer-file-name)
+                        (expand-file-name "~/Projects/Code/emacs-from-scratch/Emacs.org"))
+      ;; Dynamic scoping to the rescue
+      (let ((org-confirm-babel-evaluate nil))
+        (org-babel-tangle))))
+
+  (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+
+#+end_src
+
+** org roam 
+***** internal links org roam
 C'est ce qui permet de créer les ID vers des fichiers!!
 Ces ID sont uniques et sont détectés par org roam comme étant des nodes
 C'est BROKEN
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
+#+begin_src emacs-lisp 
 ;; IDS pour internal links:
 '(use-package org-id :ensure t
 :bind
                     )
 ;; on crée un raccourci pour org-id-get-create:
 
+(setq org-id-track-globally t) ;; rajouté pour problème nouveau node
+(org-id-update-id-locations)
 
 #+end_src
-**** Base
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-;; Org roam
-(use-package org-roam :ensure t)
-(global-set-key (kbd "\C-c n f") 'org-roam-node-find) ;;Creates a node if not exist and visits it
-(global-set-key (kbd "\C-c n i") 'org-roam-node-insert) ;;Crée node et insère un lien
-
-(global-set-key (kbd "\C-c n c") 'org-roam-capture) 
-;; L'intérêt de ce truc est de capturer un truc en plein milieu de mon taf et de revenir à ce que je faisais juste après
-(global-set-key (kbd "\C-c n b") 'org-roam-db-build-cache) ;; Pour créer la database
-(global-set-key (kbd "\C-c n r") 'org-roam-db-sync) ;; Pour la refresh
-(setq org-roam-directory (file-truename "~/org-roam"))
-(setq org-roam-completion-everywhere t)
-;;(setq find-file-visit-truename t) 
-;; Symbolic links???
-
+***** Base
+#+begin_src emacs-lisp 
+  (use-package org-roam
+    :ensure t
+    :init
+    (setq org-roam-v2-ack t)
+    :custom
+    (org-roam-directory "~/org-roam")
+    (org-roam-completion-everywhere t)
+    :bind (("C-c n l" . org-roam-buffer-toggle)
+	   ("C-c n f" . org-roam-node-find)
+	   ("C-c n i" . org-roam-node-insert)
+	   ("C-c n c" . org-roam-capture)
+	   ("C-c n b" . org-roam-db-build-cache) ;; créer database
+	   ("C-c n r" . org-roam-db-sync) ;; refresh
+	   :map org-mode-map
+	   ("C-M-i"    . completion-at-point))
+    :config
+    (org-roam-setup))
 #+end_src
-**** UI
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
+***** UI
+#+begin_src emacs-lisp 
 
 ;;UI:
 (use-package org-roam-ui :ensure t)
@@ -786,21 +663,8 @@ C'est BROKEN
 	    (local-set-key (kbd "\C-c n z") 'org-roam-ui-node-zoom)
 	    ))
 #+end_src
-*** Saut de ligne org mode?
-    #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-    ;; Saut de ligne org mode automatique, on crée un hook pour le mode org:
-
-    (defun my-org-mode-hook ()
-      (auto-fill-mode 1))
-    (add-hook 'org-mode-hook 'my-org-mode-hook)
-
-    (setq-default fill-column 80) ;; 80 colonnes de largeur pour le saut de ligne automatique
-    #+end_src
-*** [#A] org id get create et refile raccourcis
-:PROPERTIES:
-:ID:       6a02f5fb-d376-4a59-b8c9-f7a42dd0e053
-:END:
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
+***** org id get create et refile raccourcis
+#+begin_src emacs-lisp 
 ;; Raccourcis pour org id get create et refile:
 ;;(global-set-key (kbd "\C-c i") 'org-id-get-create) ;; déjà utilisé
 
@@ -813,354 +677,292 @@ C'est BROKEN
 	    ))
 
 #+end_src
-[[id:b624f2eb-cdb9-49cb-a1ac-3c78b0ceed44][à quoi sert lambda() en elisp?]]
-*  [[id:ebafedc8-32c3-4511-97b8-08a23c726e4c][pb indent python]]
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-(setq org-adapt-indentation nil) 
-#+end_src
-* recentf
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-(recentf-mode 1)
-(setq recentf-max-menu-items 25)
-(setq recentf-max-saved-items 25)
-;;(global-set-key "\C-c\ \C-r" 'recentf-open-files)
-#+end_src
+[[id:b624f2eb-cdb9-49cb-a1ac-3c78b0ceed44][à quoi sert lambda() en emacs-lisp?]]
+* Development
 
-* [#A] activer les local files variables
-:PROPERTIES:
-:ID:       8b4ce564-734b-4d37-bf78-dcc4e2cd3b4b
-:END:
+** Languages
 
+*** IDE Features with lsp-mode
 
-#+begin_src elisp
-(setq enable-local-variables t)
-#+end_src
+**** lsp-mode
 
-permet de [[id:6c0b90f9-2375-4496-820f-5e6cb79c6e29][créer des multi roam]]
+We use the excellent [[https://emacs-lsp.github.io/lsp-mode/][lsp-mode]] to enable IDE-like functionality for many
+  different programming languages via "language servers" that speak the [[https://microsoft.github.io/language-server-protocol/][Language
+  Server Protocol]].
+  Before trying to set up =lsp-mode= for a particular language, check out the [[https://emacs-lsp.github.io/lsp-mode/page/languages/][documentation for your language]] so that you can learn which language servers are available and how to install them.
 
-* org reveal : presentations stylées!
-:PROPERTIES:
-:ID:       f8fb1393-6191-4ce3-bc47-792a268c61bf
-:END:
+The =lsp-keymap-prefix= setting enables you to define a prefix for where
+  =lsp-mode='s default keybindings will be added.
+  I *highly recommend* using the prefix to find out what you can do with =lsp-mode= in a buffer.
 
-C'est des presentations en Javascript dans le navigateur
+The =which-key= integration adds helpful descriptions of the various keys so you should be able to learn a lot just by pressing =C-c l= in a =lsp-mode= buffer and trying different things that you find there.
 
-Autrement dit, ça défonce esthétiquement.
-
-On testera quand il faudra faire des presentations.
-
-** Tutoriel : [[https://opensource.com/article/18/2/org-mode-slides][org mode slides]]
-** Installation
-#+begin_src bash :tangle install_reveal.sh
-mkdir reveal_presentations
-cd reveal_presentations
-git clone https://github.com/hakimel/reveal.js
-echo $(pwd)
-#+end_src
-** emplacement
-
-[[/home/kim/org-roam/reveal_presentations]]
-** config elisp
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-;; Reveal.js + Org mode
-(use-package ox-reveal :ensure t)
-(setq Org-Reveal-root "file:///home/kim/org-roam/reveal_presentations/reveal.js/")
-(setq Org-Reveal-title-slide nil)
-#+end_src
-
-[[id:88ddce84-ee10-4841-886f-39e4ee776b0e][test org reveal]]
-* org roam data base
-#+begin_src emacs-lisp :tangle  ~/.emacs.d/config-perso.el
-(setq org-roam-db-location (file-truename "~/org-roam/roamDatabaseLinux.db"))
-#+end_src
-
-* Literate programming config
-:PROPERTIES:
-:ID:       ff02b1e7-e6c5-4d09-9771-9f1acccd98cc
-:END:
-** Bash
-Ce bloc permet d'évaluer du bash 
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-(org-babel-do-load-languages
-  'org-babel-load-languages
-  '((shell . t)))
-#+end_src
-
-#+begin_src bash
-echo "coucou"
-#+end_src
-
-#+RESULTS:
-: coucou
-
-** Sécurité code blocks
-:PROPERTIES:
-:ID:       f2e8d595-4a0c-4458-9399-eff296873ae8
-:END:
-On désactive le prompt qui demande si on veut executer:
-
-
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-;; on désactive le prompt de confirmation pour les languages suivants:
-(defun my-org-confirm-babel-evaluate (lang body)
-  (not (string= lang "python"))
-  (not (string= lang "bash"))
-  (not (string= lang "dart"))
-)  
-(setq org-confirm-babel-evaluate #'my-org-confirm-babel-evaluate)
-#+end_src
-** Python 
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-
-  ;; Ecrit par copilot:
-  ;; Rajoutons la possibilité d'executer du python dans org mode:
-  ;; On veut la version 3.9 de python:
-
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((python . t)))
-  (setq org-babel-python-command "/usr/bin/python3.8 -i")
-
-
-  ;; On veut que les résultats de python soient affichés dans le buffer:
-  (setq org-babel-python-htmpize-output nil)
-
-#+end_src
-
-*** Utiliser xterm pour org babel python
-#+begin_src emacs-lisp 
-(setq org-babel-python-command "xterm -hold -e /usr/bin/python3.8 -i")
-#+end_src
-
-Ca fonctionne pas
-** indent python avec espaces
-Cette partie est à prouver:
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-  ;; Activer l'indentation en espaces pour le mode Python
-(defun my-python-mode-hook ()
-  (setq indent-tabs-mode nil) ; Désactiver l'utilisation des tabulations pour l'indentation
-  (setq python-indent-offset 4) ; Définir le nombre d'espaces par niveau d'indentation (ici, 4 espaces)
-  (setq tab-width 4)) ; Définir la largeur d'une tabulation à 4 espaces (facultatif, mais recommandé pour l'alignement visuel)
-
-(add-hook 'python-mode-hook 'my-python-mode-hook)
-    ;; Highlight inconsistent indentation
-    #+end_src
-** [#A] indentation babel blocks pb EVIL
-[[https://emacs.stackexchange.com/questions/62602/how-do-i-keep-the-indentation-on-org-babel-tangle][Pb indentation tangling]]
-J'ai un pb: l'indentation fait n'importe quoi quand je tangle
-Et bouge quand je passe de l'édition à org
-
-Tout le bloc ci dessous est *indispensable* au bon fonctionnement du
-literate programming
-Sources :
-[[https://github.com/syl20bnr/spacemacs/issues/13255][github forum evil auto indent]]
-[[https://emacs.stackexchange.com/questions/42075/unwanted-indentation-in-org-evil][Stack exchange pb evil autoindent]]
-  #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-;; BLOC INDISPENSABLE
-	    (setq org-src-fontify-natively t
-		  org-src-window-setup 'current-window ;; edit in current window
-		  org-src-strip-leading-and-trailing-blank-lines t
-		  org-src-preserve-indentation t ;; do not put two spaces on the left
-		  org-src-tab-acts-natively t
-		  org-edit-src-content-indentation 0)
-    (add-hook 'org-mode-hook
-	      (lambda () (setq evil-auto-indent nil)))
-#+end_src
-
-***** Can’t guess python-indent-offset, using defaults: 4 
-Cet avertissement est harmless, on s'en bas les couilles.
-
-** revert buffer raccourci
-:PROPERTIES:
-:ID:       07646d3c-df7c-42e6-848d-d2ba78c1c699
-:END:
-On utilise plus revert buffer mais revert buffer quick : C-x x g
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-    ;; Revert buffer
-    ;; (global-set-key (kbd "C-c r") 'revert-buffer)
-#+end_src
-
-** Ressources literate programming
-:PROPERTIES:
-:ID:       ff09b115-972c-4925-8c71-e3f67671428c
-:END:
-[[https://orgmode.org/worg/org-contrib/babel/how-to-use-Org-Babel-for-R.html][tuto]]
-
-[[http://eschulte.github.io/org-scraps/][Org scraps : snippets de code]]
-[[/home/kim/Dropbox/FAC/LIVRES/internet/literate_programming.pdf][literate programming article]]
 #+begin_src emacs-lisp
-;;:tangle ~/.emacs.d/config-perso.el
-(custom-set-variables
- '(org-babel-load-languages (quote ((emacs-lisp . t) (R . t))))
- '(org-confirm-babel-evaluate nil))
+
+  (defun efs/lsp-mode-setup ()
+    (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+    (lsp-headerline-breadcrumb-mode))
+
+  (use-package lsp-mode
+    :commands (lsp lsp-deferred)
+    :hook (lsp-mode . efs/lsp-mode-setup)
+    :init
+    (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
+    :config
+    (lsp-enable-which-key-integration t))
+
 #+end_src
-* fountain pour écrire scripts video
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
+
+**** lsp-ui
+
+[[https://emacs-lsp.github.io/lsp-ui/][lsp-ui]] is a set of UI enhancements built on top of =lsp-mode= which make Emacs feel even more like an IDE.  Check out the screenshots on the =lsp-ui= homepage (linked at the beginning of this paragraph) to see examples of what it can do.
+
+#+begin_src emacs-lisp
+
+  (use-package lsp-ui
+    :hook (lsp-mode . lsp-ui-mode)
+    :custom
+    (lsp-ui-doc-position 'bottom))
+
+#+end_src
+
+**** lsp-treemacs
+
+[[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]] provides nice tree views for different aspects of your code like symbols in a file, references of a symbol, or diagnostic messages (errors and warnings) that are found in your code.
+
+Try these commands with =M-x=:
+
+- =lsp-treemacs-symbols= - Show a tree view of the symbols in the current file
+- =lsp-treemacs-references= - Show a tree view for the references of the symbol under the cursor
+- =lsp-treemacs-error-list= - Show a tree view for the diagnostic messages in the project
+
+This package is built on the [[https://github.com/Alexander-Miller/treemacs][treemacs]] package which might be of some interest to you if you like to have a file browser at the left side of your screen in your editor.
+
+#+begin_src emacs-lisp
+
+  (use-package lsp-treemacs
+    :after lsp)
+
+#+end_src
+
+**** lsp-ivy
+
+[[https://github.com/emacs-lsp/lsp-ivy][lsp-ivy]] integrates Ivy with =lsp-mode= to make it easy to search for things by name in your code.  When you run these commands, a prompt will appear in the minibuffer allowing you to type part of the name of a symbol in your code.  Results will be populated in the minibuffer so that you can find what you're looking for and jump to that location in the code upon selecting the result.
+
+Try these commands with =M-x=:
+
+- =lsp-ivy-workspace-symbol= - Search for a symbol name in the current project workspace
+- =lsp-ivy-global-workspace-symbol= - Search for a symbol name in all active project workspaces
+
+#+begin_src emacs-lisp
+
+  (use-package lsp-ivy)
+
+#+end_src
+
+*** TypeScript
+
+This is a basic configuration for the TypeScript language so that =.ts= files activate =typescript-mode= when opened.  We're also adding a hook to =typescript-mode-hook= to call =lsp-deferred= so that we activate =lsp-mode= to get LSP features every time we edit TypeScript code.
+
+#+begin_src emacs-lisp
+
+  (use-package typescript-mode
+    :mode "\\.ts\\'"
+    :hook (typescript-mode . lsp-deferred)
+    :config
+    (setq typescript-indent-level 2))
+
+#+end_src
+
+*Important note!*  For =lsp-mode= to work with TypeScript (and JavaScript) you will need to install a language server on your machine.  If you have Node.js installed, the easiest way to do that is by running the following command:
+
+#+begin_src shell :tangle no
+
+npm install -g typescript-language-server typescript
+
+#+end_src
+
+This will install the [[https://github.com/theia-ide/typescript-language-server][typescript-language-server]] and the TypeScript compiler package.
+
+*** [#A] Python developpement emacs 2024
+:PROPERTIES:
+:ID:       4a0722fc-bfe5-4817-bb4e-becfa639fe16
+:END:
+
+We use =lsp-mode= and =dap-mode= to provide a more complete development environment for Python in Emacs.  Check out [[https://emacs-lsp.github.io/lsp-mode/page/lsp-pyls/][the =pyls= configuration]] in the =lsp-mode= documentation for more details.
+
+Make sure you have the =pyls= language server installed before trying =lsp-mode=!
+
+#+begin_src sh :tangle no
+
+pip install --user "python-language-server[all]"
+
+#+end_src
+
+There are a number of other language servers for Python so if you find that =pyls= doesn't work for you, consult the =lsp-mode= [[https://emacs-lsp.github.io/lsp-mode/page/languages/][language configuration documentation]] to try the others!
+
+#+begin_src emacs-lisp
+
+  (use-package python-mode
+    :ensure t
+    :hook (python-mode . lsp-deferred)
+    :custom
+    ;; NOTE: Set these if Python 3 is called "python3" on your system!
+    ;; (python-shell-interpreter "python3")
+    ;; (dap-python-executable "python3")
+    (dap-python-debugger 'debugpy)
+    :config
+    (require 'dap-python))
+
+
+#+end_src
+
+**** environnements virtuels emacs python 2024
+:PROPERTIES:
+:ID:       4315575d-5197-4f85-9f41-81089b99c44b
+:END:
+You can use the pyvenv package to use =virtualenv= environments in Emacs.
+The _pyvenv-activate_ command should configure Emacs to cause =lsp-mode= and
+=dap-mode= to use the virtual environment when they are loaded,
+just select the path to your virtual environment before loading your project.
+
+(en gros le .venv)
+
+#+begin_src emacs-lisp
+
+  (use-package pyvenv
+    :config
+    (pyvenv-mode 1))
+
+#+end_src
+
+penser à faire *activate puis sélectionner le merdier* 
+** Company Mode
+
+[[http://company-mode.github.io/][Company Mode]] provides a nicer in-buffer completion interface than =completion-at-point= which is more reminiscent of what you would expect from an IDE.  We add a simple configuration to make the keybindings a little more useful (=TAB= now completes the selection and initiates completion at the current location if needed).
+
+We also use [[https://github.com/sebastiencs/company-box][company-box]] to further enhance the look of the completions with icons and better overall presentation.
+
+#+begin_src emacs-lisp
+
+  (use-package company
+    :after lsp-mode
+    :hook (lsp-mode . company-mode)
+    :bind (:map company-active-map
+           ("<tab>" . company-complete-selection))
+          (:map lsp-mode-map
+           ("<tab>" . company-indent-or-complete-common))
+    :custom
+    (company-minimum-prefix-length 1)
+    (company-idle-delay 0.0))
+
+  (use-package company-box
+    :hook (company-mode . company-box-mode))
+
+#+end_src
+
+** Projectile
+
+[[https://projectile.mx/][Projectile]] is a project management library for
+Emacs which makes it a lot easier to navigate around code projects for various languages.
+Many packages integrate with Projectile so it's a good idea to have it installed even if you don't use its commands directly.
+
+#+begin_src emacs-lisp
+
+  (use-package projectile
+    :diminish projectile-mode
+    :config (projectile-mode)
+    :custom ((projectile-completion-system 'ivy))
+    :bind-keymap
+    ("C-c p" . projectile-command-map)
+    :init
+    ;; NOTE: Set this to the folder where you keep your Git repos!
+    (when (file-directory-p "~/Projects/Code")
+      (setq projectile-project-search-path '("~/Projects/Code")))
+    (setq projectile-switch-project-action #'projectile-dired))
+
+  (use-package counsel-projectile
+    :config (counsel-projectile-mode))
+
+#+end_src
+
+** Magit
+
+[[https://magit.vc/][Magit]] is the best Git interface I've ever used.  Common Git operations are easy to execute quickly using Magit's command panel system.
+
+#+begin_src emacs-lisp
+
+  (use-package magit
+    :custom
+    (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+;;  (use-package evil-magit
+;;    :after magit)
+
+  ;; NOTE: Make sure to configure a GitHub token before using this package!
+  ;; - https://magit.vc/manual/forge/Token-Creation.html#Token-Creation
+  ;; - https://magit.vc/manual/ghub/Getting-Started.html#Getting-Started
+  (use-package forge)
+
+#+end_src
+
+** Commenting
+
+Emacs' built in commenting functionality =comment-dwim= (usually bound to =M-;=) doesn't always comment things in the way you might expect so we use [[https://github.com/redguardtoo/evil-nerd-commenter][evil-nerd-commenter]] to provide a more familiar behavior.  I've bound it to =M-/= since other editors sometimes use this binding but you could also replace Emacs' =M-;= binding with this command.
+
+#+begin_src emacs-lisp
+
+  (use-package evil-nerd-commenter
+    :bind ("M-/" . evilnc-comment-or-uncomment-lines))
+
+#+end_src
+
+** Plier des trucs 
+#+begin_src emacs-lisp
+(add-hook 'prog-mode-hook #'hs-minor-mode)
+#+end_src
+** Rainbow Delimiters
+
+[[https://github.com/Fanael/rainbow-delimiters][rainbow-delimiters]] is useful in programming modes because it colorizes nested parentheses and brackets according to their nesting depth.  This makes it a lot easier to visually match parentheses in Emacs Lisp code without having to count them yourself.
+
+#+begin_src emacs-lisp
+
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+#+end_src
+
+* Applications
+** Some App
+
+This is an example of configuring another non-Emacs application using org-mode.  Not only do we write out the configuration at =.config/some-app/config=, we also compute the value that gets stored in this configuration from the Emacs Lisp block above it.
+
+#+NAME: the-value
+#+begin_src emacs-lisp tangle no
+
+  (+ 55 100)
+
+#+end_src
+
+#+begin_src conf tangle .config/some-app/config :noweb yes
+
+  value=<<the-value()>>
+
+#+end_src
+
+* Mes trucs 
+** fountain 
+#+begin_src emacs-lisp 
 (use-package fountain-mode
   :ensure t
   :mode "\\.fountain\\'"
   :config
   (setq fountain-export-path "/home/kim/org-roam/fountain/"))
 #+end_src
-* Ressources emacs
-:PROPERTIES:
-:ID:       9aeb5f45-672f-4ca0-b199-c900285adc30
-:END:
-** [[https://www.labri.fr/perso/nrougier/GTD/index.html][nrougier]]
-:PROPERTIES:
-:ID:       ce2802bb-b973-4780-93cc-684519c24a39
-:END:
-*** org mode links and capture
-:PROPERTIES:
-:ID:       73cb7d26-9bbf-4729-b184-86fe986c966b
-:END:
-https://www.djcbsoftware.nl/code/mu/mu4e/Org_002dmode-links.html
-* Autres
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-(prefer-coding-system 'utf-8)
-(setq org-highlight-latex-and-related '(latex))
-#+end_src
 
-#+RESULTS:
-| latex |
+** tangling + chmod 
 
-* images
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-(setq org-image-actual-width '(300))
-#+end_src
-
-* taille latex :
-:PROPERTIES:
-:ID:       96fe9ba5-2a4c-4062-b86b-58e477769da6
-:END:
-
-[[file:~/.emacs::'(:foreground default :background default :scale 2.5 :html-foreground "Black" :html-background "Transparent" :html-scale 1.0 :matchers][Lien .emacs]]
-[[file:~/.emacs::'(:foreground default :background default :scale 2 :html-foreground "Black" :html-background "Transparent" :html-scale 1.0 :matchers][.emacs DELL]]
-
- Chercher 
- =org-format-latex-options=
-
-* TODO Zoomer avec les formules latex
-:PROPERTIES:
-:ID:       55476fcf-c3c2-4c7b-b32f-3a6767e5d920
-:END:
-Pour pouvoir zoomer
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-(defun update-org-latex-fragments ()
-  (org-latex-preview '(64))
-  ;; On multiplie par un peu plus que 1:
-  (setq jaj (+ 1.8 text-scale-mode-amount))
-  (plist-put org-format-latex-options :scale jaj)
-  (org-latex-preview '(16)))
-(add-hook 'text-scale-mode-hook 'update-org-latex-fragments)
-#+end_src
-
-* Ascidoc
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el 
-(use-package adoc-mode
-  :ensure t
-  :mode "\\.adoc\\'"
-  :config
-  (setq adoc-indent-per-level 2))
-#+end_src
-* TODO programme [[id:e9d21ca1-5ccf-47b8-af52-1f8aacc2b834][python avec C++]]
-* Recherche 
-** [[https://github.com/weirdNox/org-noter][org noter]] + zotero  
-:PROPERTIES:
-:ID:       409a9ce9-04ae-4596-a56a-3e7ae38095ce
-:END:
-
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el 
-(use-package org-noter
-:ensure t)
-#+end_src
-
-* package : dashboard
-Sympa 
-5:30
-https://www.youtube.com/watch?v=kRkp-uJTK7s
-
-
-#+begin_src emacs-lisp
-:tangle ~/.emacs.d/config-perso.el
-(use-package dashboard
-  :ensure t
-  :config
-  (dashboard-setup-startup-hook))
-(setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
-(setq dashboard-week-agenda t)
-#+end_src
-
-#+RESULTS:
-: t
-
-https://github.com/emacs-dashboard/emacs-dashboard
-
-*Pas très utile, je préfère org agenda*
-
-* tangler et insérer le lien
-
-* language C 
-
-g++ -g -pedantic -Wall -o hello hello.c
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
-;;(defun execute-c-program ()
-;;  (interactive)
-;;  (defvar foo)
-;;  (setq foo (concat "gcc -g -pedantic -Wall -o " (file-name-sans-extension (buffer-name)) " " (buffer-name)))
-;;  ;; On execute: 
-;;  (setq execute (concat "xterm -hold -e ./" (file-name-sans-extension (buffer-name))))
-;;  (shell-command foo)
-;;  (shell-command execute))
-;;
-;;;;;;;;;;;; compiler
-;;
-;;(add-hook 'c-mode-hook
-;;      (function (lambda ()
-;;        (local-set-key (kbd "C-c C-c") 'execute-c-program))))
-(add-hook 'c-mode-hook
-      (function (lambda ()
-        (local-set-key (kbd "C-c C-c") 'compile))))
-
-;; On set la commmande de compilation par défaut :
-(setq compile-command "g++ -g -pedantic -Wall -c")
-(add-hook 'c-mode-common-hook
-          (lambda () (company-mode)))
-
-(use-package cc-mode :ensure t)
-
-(setq gdb-many-windows t)
-(setq gdb-show-main t)
-
-(add-hook 'c-mode-common-hook
-          (lambda () (flycheck-mode)))
-#+end_src
-
-* org file apps à rajouter
-
-#+begin_src emacs-lisp
- '(org-file-apps
-   '((auto-mode . emacs)
-     (directory . emacs)
-     ("\\.mm\\'" . default)
-     ("\\.x?html?\\'" . default)
-     ("\\.pdf\\'" . "mupdf %s")
-     ("\\.md\\'" . "code %s")
-     ("\\.djvu\\'" . "xdg-open %s")
-     ("\\.epub\\'" . "mupdf %s")
-     ("\\.odt\\'\11" . "libreoffice %s")
-     ("\\.hip\\'\11" . "houdini %s")
-     ("\\.blend\\'" . "blender %s")
-     ("\\.xcf\\'" . "gimp %s")
-     ("\\.hip\\'" . "/opt/hfs18.5.532/bin/houdinifx %s")
-     ("\\.ntp\\'" . "~/Natron-2.3.15/Natron %s")
-     ("\\.mp4\\'" . "vlc %s")))
-
-#+end_src
-
-* tangling + chmod 
-
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
+#+begin_src emacs-lisp 
 (defun my-org-babel-tangle-chmod ()
   "Tangle and chmod +x"
   (interactive)
@@ -1179,237 +981,52 @@ g++ -g -pedantic -Wall -o hello hello.c
 
 (add-hook 'org-mode-hook
 	  (lambda ()
-	    (local-set-key (kbd "C-c C-v C-t") 'my-org-babel-tangle-chmod)))
+	    (local-set-key (kbd "C-c C-v C-t") 'my-org-babel-tangle-chmod))
+
+	  (lambda ()
+	    (local-set-key (kbd "C-c C-,") 'org-insert-structure-template))
+	  )
+
 ;; On peut maintenant faire un C-c C-v t pour tangle et rendre exécutable le fichier source
 #+end_src
 
-#+RESULTS:
-| (lambda nil (local-set-key (kbd C-c C-v C-t) 'my-org-babel-tangle-chmod)) | (lambda nil (setq evil-auto-indent nil)) | (lambda nil (local-set-key (kbd  n p) 'org-id-get-create) (local-set-key (kbd  n m) 'org-roam-refile)) | my-org-mode-hook | (lambda nil (local-set-key (kbd  n g) 'org-roam-ui-change-local-graph) (local-set-key (kbd  n d) 'org-roam-ui-remove-from-local-graph) (local-set-key (kbd  n a) 'org-roam-ui-add-to-local-graph) (local-set-key (kbd  n z) 'org-roam-ui-node-zoom)) | (lambda nil (local-set-key (kbd <tab>) 'org-cycle)) | copilot-mode | #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | (lambda nil (org-bullets-mode 1)) | undo-tree-mode | (lambda nil (local-set-key (kbd  i) 'org-download-clipboard)) | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-fold-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes |
-
-* copilot 2024
-*** install bash
-#+begin_src bash
-git clone https://github.com/rksm/copilot-emacsd.git
-cd copilot-emacsd
-git submodule update --init --recursive
+** [[https://systemcrafters.net/emacs-from-scratch/the-best-default-settings/][nice default settings]]
+#+begin_src emacs-lisp
+  (recentf-mode 1)
+  (global-set-key (kbd "C-c F") 'recentf) ;;POWERFUL
+  (setq history-length 25)
+  (savehist-mode 1)
+  ;; Remember and restore the last cursor location of opened files
+  (save-place-mode 1)
+  ;; Don't pop up UI dialogs when prompting
+  (setq use-dialog-box nil)
+  ;; Revert buffers when the underlying file has changed
+  (global-auto-revert-mode 1)
+  ;; Revert Dired and other buffers
+  (setq global-auto-revert-non-file-buffers t)
 #+end_src
 
-#+RESULTS:
+** undo tree
+  #+begin_src emacs-lisp 
 
-*** load dans emacs
-En fait faut juste choper copilot.el et l'executer quoi
-#+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso-dell.el
+	  ;; Le undo tree broken
+  (use-package undo-tree :ensure t)
+  (setq undo-tree-visualizer-diff t)
+  (setq undo-tree-history-directory-alist
+        '(("." . "/home/kim/org-roam/undo_trees")))
 
-(load-file "~/copilot-emacsd/copilot.el/copilot.el")
-
-
-(if (daemonp)
-    (add-hook 'after-make-frame-functions
-		(lambda (frame)
-		(setenv "PATH" (concat "/home/kim/bin/node-v20.11.0-linux-x64/bin" (getenv "PATH")))
-		(setq exec-path (append '("/home/kim/bin/node-v20.11.0-linux-x64/bin") exec-path)))))
-
-
-  (add-hook 'org-mode-hook 'copilot-mode) ;; On active copilot dans ORG
-  (customize-set-variable 'copilot-enable-predicates '(evil-insert-state-p))
-  (define-key copilot-completion-map (kbd "<tab>") 'copilot-tab)
-  (define-key copilot-completion-map (kbd "TAB") 'copilot-tab)
-  (setenv "PATH" (concat "/home/kim/bin/node-v20.11.0-linux-x64/bin" (getenv "PATH")))
-  (setq exec-path (append '("/home/kim/bin/node-v20.11.0-linux-x64/bin") exec-path))
-
-  ;; (global-set-key (kbd "C-c c c") 'copilot-complete)
-
-  (copilot-mode 1)
-
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-(defun rk/copilot-tab ()
-  "Tab command that will complet with copilot if a completion is
-available. Otherwise will try company, yasnippet or normal
-tab-indent."
-  (interactive)
-  (or (copilot-accept-completion)
-      (company-yasnippet-or-completion)
-      (indent-for-tab-command)))
-
-(defun rk/copilot-complete-or-accept ()
-  "Command that either triggers a completion or accepts one if one
-is available. Useful if you tend to hammer your keys like I do."
-  (interactive)
-  (if (copilot--overlay-visible)
-      (progn
-        (copilot-accept-completion)
-        (open-line 1)
-        (next-line))
-    (copilot-complete)))
-
-(defun rk/copilot-quit ()
-  "Run `copilot-clear-overlay' or `keyboard-quit'. If copilot is
-cleared, make sure the overlay doesn't come back too soon."
-  (interactive)
-  (condition-case err
-      (when copilot--overlay
-        (lexical-let ((pre-copilot-disable-predicates copilot-disable-predicates))
-          (setq copilot-disable-predicates (list (lambda () t)))
-          (copilot-clear-overlay)
-          (run-with-idle-timer
-           1.0
-           nil
-           (lambda ()
-             (setq copilot-disable-predicates pre-copilot-disable-predicates)))))
-    (error handler)))
-
-(defun rk/copilot-complete-if-active (next-func n)
-  (let ((completed (when copilot-mode (copilot-accept-completion))))
-    (unless completed (funcall next-func n))))
-
-(defun rk/no-copilot-mode ()
-  "Helper for `rk/no-copilot-modes'."
-  (copilot-mode -1))
-
-(defvar rk/no-copilot-modes '(shell-mode
-                              inferior-python-mode
-                              eshell-mode
-                              term-mode
-                              vterm-mode
-                              comint-mode
-                              compilation-mode
-                              debugger-mode
-                              dired-mode-hook
-                              compilation-mode-hook
-                              flutter-mode-hook
-                              minibuffer-mode-hook)
-  "Modes in which copilot is inconvenient.")
-
-(defvar rk/copilot-manual-mode nil
-  "When `t' will only show completions when manually triggered, e.g. via M-C-<return>.")
-
-
-
-
-(defun rk/copilot-enable-predicate ()
-  ""
-  (and
-   (eq (get-buffer-window) (selected-window))))
-
-;;(defun rk/copilot-disable-predicate ()
-;;  "When copilot should not automatically show completions."
-;;  (or rk/copilot-manual-mode
-;;      (member major-mode rk/no-copilot-modes)
-;;      (and (not rk/copilot-enable-for-org) (eq major-mode 'org-mode))
-;;      (company--active-p)))
-
-(defun rk/copilot-change-activation ()
-  "Switch between three activation modes:
-- automatic: copilot will automatically overlay completions
-- manual: you need to press a key (M-C-<return>) to trigger completions
-- off: copilot is completely disabled."
-  (interactive)
-  (if (and copilot-mode rk/copilot-manual-mode)
-      (progn
-        (message "deactivating copilot")
-        (global-copilot-mode -1)
-        (setq rk/copilot-manual-mode nil))
-    (if copilot-mode
-        (progn
-          (message "activating copilot manual mode")
-          (setq rk/copilot-manual-mode t))
-      (message "activating copilot mode")
-      (global-copilot-mode))))
-
-(defun rk/copilot-toggle-for-org ()
-  "Toggle copilot activation in org mode. It can sometimes be
-annoying, sometimes be useful, that's why this can be handly."
-  (interactive)
-  (setq rk/copilot-enable-for-org (not rk/copilot-enable-for-org))
-  (message "copilot for org is %s" (if rk/copilot-enable-for-org "enabled" "disabled")))
-
-;; load the copilot package
-(use-package copilot
-  :load-path (lambda () (expand-file-name "copilot.el" user-emacs-directory))
-
-  :diminish ;; don't show in mode line (we don't wanna get caught cheating, right? ;)
-
-  :config
-  ;; keybindings that are active when copilot shows completions
-  (define-key copilot-mode-map (kbd "M-C-<next>") #'copilot-next-completion)
-  (define-key copilot-mode-map (kbd "M-C-<prior>") #'copilot-previous-completion)
-  (define-key copilot-mode-map (kbd "M-C-<right>") #'copilot-accept-completion-by-word)
-  (define-key copilot-mode-map (kbd "M-C-<down>") #'copilot-accept-completion-by-line)
-  ;; global keybindings
-  (define-key global-map (kbd "M-C-<return>") #'rk/copilot-complete-or-accept)
-  (define-key global-map (kbd "M-C-<escape>") #'rk/copilot-change-activation)
-
-
-  ;; Do copilot-quit when pressing C-g
-  (advice-add 'keyboard-quit :before #'rk/copilot-quit)
-
-  ;; complete by pressing right or tab but only when copilot completions are
-  ;; shown. This means we leave the normal functionality intact.
-  (advice-add 'right-char :around #'rk/copilot-complete-if-active)
-  (advice-add 'indent-for-tab-command :around #'rk/copilot-complete-if-active)
-
-  ;; deactivate copilot for certain modes
-  (add-to-list 'copilot-enable-predicates #'rk/copilot-enable-predicate)
-  (add-to-list 'copilot-disable-predicates #'rk/copilot-disable-predicate))
-
-(eval-after-load 'copilot
-  '(progn
-     ;; Note company is optional but given we use some company commands above
-     ;; we'll require it here. If you don't use it, you can remove all company
-     ;; related code from this file, copilot does not need it.
-     (require 'company)
-     (global-copilot-mode)))
-
-
-
-(add-hook 'org-mode-hook rk/copilot-enable-for-org)
-#+end_src
-*** copilot old
-    #+begin_src emacs-lisp
-:tangle ~/.emacs.d/config-perso-dell.el
-	  ;; A SUPPRIMER POUR CEUX QUI UTILISENT MA CONFIG:
-	  ;; Permet d'avoir github copilot dans emacs:
-	  ;; Source : https://github.com/zerolfx/copilot.el
-	  ;; Pour trouver le serveur node :
-	  ;; On crée un hook pour quand on est dans emacsclient:
-
-	      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-	  ;; IMPORTANT
-	  ;; CE TRUC PERMET DE DETECTER NODE pour copilot si on utilise emacsclient:
-	  ;;(use-package editorconfig :ensure t)
-	  ;; (use-package jsonrpc :ensure t)
-	  (if (daemonp)
-	      (add-hook 'after-make-frame-functions
-			(lambda (frame)
-			  (setenv "PATH" (concat "~/.nvm/versions/node/v18.16.0/bin:" (getenv "PATH")))
-			  (setq exec-path (append '("~/.nvm/versions/node/v18.16.0/bin") exec-path)))))
-	      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	  (add-to-list 'load-path "~/.emacs.d/copilot_pour_emacs/")
-	  (require 'copilot)
-	  (add-hook 'prog-mode-hook 'copilot-mode) ;; On active copilot dans tous les modes prog (python, js, etc)
-	  (add-hook 'org-mode-hook 'copilot-mode) ;; On active copilot dans ORG
-
-	  (customize-set-variable 'copilot-enable-predicates '(evil-insert-state-p))
-
-	  (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
-	  (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
-	  ;; On utilise nvm pour gérer les versions de node
-	  ;; Source:
-
-	  (when (memq window-system '(mac ns x))
-	    (exec-path-from-shell-initialize))
-
-	  ;; On active copilot dans org :
-
-	  ;; On rajoute un moyen de toggle le copilot mode:
-      (global-set-key (kbd "C-c c c") 'copilot-mode)
-      ;;(copilot-mode 1)
-
+(global-undo-tree-mode)
     #+end_src
+** copier chemin fichier 
+    #+begin_src emacs-lisp 
+    ;; COPIER LE CHEMIN D'UN FICHIER: 
 
 
+    (defun copy-file-path ()
+      "Copy the full path of the current buffer to the clipboard."
+      (interactive)
+      (kill-new (buffer-file-name))
+      (message "Copied path: %s" (buffer-file-name)))
 
-
+    (global-set-key (kbd "C-c c p") 'copy-file-path)
+    #+end_src

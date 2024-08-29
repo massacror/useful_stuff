@@ -1,10 +1,8 @@
 :PROPERTIES:
 :ID:       a81fba79-8f18-4c4c-b8c9-c6a731148caa
 :END:
-#+title: config emacs 2024
+#+title: emacs config 2024
 #+PROPERTY: header-args:emacs-lisp :tangle ~/.emacs.d/system-crafters.el :mkdirp yes
-
-
 
 *** sauver la config
 [[id:f3f18585-dc83-4248-bb39-27b20587ff0b][Dépot useful stuff]]
@@ -84,7 +82,7 @@ This section configures basic UI settings that remove unneeded elements to make 
   (scroll-bar-mode -1)        ; Disable visible scrollbar
   (tool-bar-mode -1)          ; Disable the toolbar
   (tooltip-mode -1)           ; Disable tooltips
-  (set-fringe-mode 10)        ; Give some breathing room
+  (set-fringe-mode 10)        ; Give some breathing room PADDING 
 
   (menu-bar-mode -1)            ; Disable the menu bar
 
@@ -336,6 +334,7 @@ This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to desig
 
 The =efs/org-font-setup= function configures various text faces to tweak the sizes of headings and use variable width fonts in most cases so that it looks more like we're editing a document in =org-mode=.  We switch back to fixed width (monospace) fonts for code blocks and tables so that they display correctly.
 
+
 #+begin_src emacs-lisp
 
   (defun efs/org-font-setup ()
@@ -365,7 +364,6 @@ The =efs/org-font-setup= function configures various text faces to tweak the siz
     (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
 #+end_src
-
 ** Basic Config
 
 This section contains the basic configuration for =org-mode= plus the configuration for Org agendas and capture templates.  There's a lot to unpack in here so I'd recommend watching the videos for [[https://youtu.be/VcgjTEa0kU4][Part 5]] and [[https://youtu.be/PNE-mgkZ6HM][Part 6]] for a full explanation.
@@ -382,15 +380,11 @@ This section contains the basic configuration for =org-mode= plus the configurat
     :hook (org-mode . efs/org-mode-setup)
     :config
     (setq org-ellipsis " ▾")
+   (setq org-agenda-files "~/.agenda_files")
 
     (setq org-agenda-start-with-log-mode t)
     (setq org-log-done 'time)
     (setq org-log-into-drawer t)
-
-    (setq org-agenda-files
-          '("~/Projects/Code/emacs-from-scratch/OrgFiles/Tasks.org"
-            "~/Projects/Code/emacs-from-scratch/OrgFiles/Habits.org"
-            "~/Projects/Code/emacs-from-scratch/OrgFiles/Birthdays.org"))
 
     (require 'org-habit)
     (add-to-list 'org-modules 'org-habit)
@@ -504,7 +498,7 @@ This section contains the basic configuration for =org-mode= plus the configurat
 
 **** mon truc
 
-  #+begin_src emacs-lisp :tangle ~/.emacs.d/config-perso.el
+  #+begin_src emacs-lisp
     ;;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     ;; Org mode setup raccourcis:
     ;; insertion d'image avec C-c i:
@@ -520,7 +514,6 @@ This section contains the basic configuration for =org-mode= plus the configurat
     (setq org-log-done t)
 
 
-    (org-agenda-files "~/.agenda_files")
     #+end_src
 *** Nicer Heading Bullets
 
@@ -540,10 +533,10 @@ This section contains the basic configuration for =org-mode= plus the configurat
 
 We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]] to center =org-mode= buffers for a more pleasing writing experience as it centers the contents of the buffer horizontally to seem more like you are editing a document.  This is really a matter of personal preference so you can remove the block below if you don't like the behavior.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no 
 
   (defun efs/org-mode-visual-fill ()
-    (setq visual-fill-column-width 130
+    (setq visual-fill-column-width 150
           visual-fill-column-center-text t)
     (visual-fill-column-mode 1))
 
@@ -588,9 +581,11 @@ You can add more =src= block templates below by copying one of the lines and cha
 
 ** Auto-tangle Configuration Files
 
-This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-config= gets executed each time such a buffer gets saved.  This function checks to see if the file being saved is the Emacs.org file you're looking at right now, and if so, automatically exports the configuration here to the associated output files.
+This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-config= gets executed each time such a buffer gets saved.
+This function checks to see if the file being saved is the Emacs.org file you're looking at right now,
+and if so, automatically exports the configuration here to the associated output files.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 
   ;; Automatically tangle our Emacs.org config file when we save it
   (defun efs/org-babel-tangle-config ()
@@ -609,15 +604,16 @@ This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-con
 C'est ce qui permet de créer les ID vers des fichiers!!
 Ces ID sont uniques et sont détectés par org roam comme étant des nodes
 C'est BROKEN
+*Ce truc fait tout déconner:* (problème création de nodes, enfin bref l'enfer.)
 #+begin_src emacs-lisp 
 ;; IDS pour internal links:
-'(use-package org-id :ensure t
-:bind
-                    )
-;; on crée un raccourci pour org-id-get-create:
-
-(setq org-id-track-globally t) ;; rajouté pour problème nouveau node
-(org-id-update-id-locations)
+;;'(use-package org-id :ensure t
+;;:bind
+;;                    )
+;;;; on crée un raccourci pour org-id-get-create:
+;;
+;;(setq org-id-track-globally t) ;; rajouté pour problème nouveau node
+;;(org-id-update-id-locations)
 
 #+end_src
 ***** Base
@@ -678,18 +674,39 @@ C'est BROKEN
 
 #+end_src
 [[id:b624f2eb-cdb9-49cb-a1ac-3c78b0ceed44][à quoi sert lambda() en emacs-lisp?]]
+** org file apps 
+#+begin_src emacs-lisp
+(setq org-file-apps
+      '(("\\.JPG\\'" . system)
+        (auto-mode . emacs)
+        ("\\.JPG\\'" . system)
+        (directory . emacs)
+        ("\\.mm\\'" . default)
+        ("\\.x?html?\\'" . default)
+        ("\\.pdf\\'" . "zathura %s")
+        ("\\.md\\'" . "code %s")
+        ("\\.djvu\\'" . "xdg-open %s")
+        ("\\.epub\\'" . "xdg-open %s")
+        ("\\.odt\\'" . "libreoffice %s")
+        ("\\.hip\\'" . "houdini %s")
+        ("\\.blend\\'" . "blender %s")
+        ("\\.xcf\\'" . "gimp %s")
+        ("\\.hip\\'" . "/opt/hfs18.5.532/bin/houdinifx %s")
+        ("\\.ntp\\'" . "~/Natron-2.3.15/Natron %s")
+        ("\\.mp4\\'" . "cvlc %s")))
+#+end_src
 * Development
-
 ** Languages
 
 *** IDE Features with lsp-mode
 
-**** lsp-mode
+***** lsp-mode
 
 We use the excellent [[https://emacs-lsp.github.io/lsp-mode/][lsp-mode]] to enable IDE-like functionality for many
   different programming languages via "language servers" that speak the [[https://microsoft.github.io/language-server-protocol/][Language
   Server Protocol]].
-  Before trying to set up =lsp-mode= for a particular language, check out the [[https://emacs-lsp.github.io/lsp-mode/page/languages/][documentation for your language]] so that you can learn which language servers are available and how to install them.
+  Before trying to set up =lsp-mode= for a particular language,
+  check out the [[https://emacs-lsp.github.io/lsp-mode/page/languages/][documentation for your language]] so that you can learn which language servers are available and how to install them.
 
 The =lsp-keymap-prefix= setting enables you to define a prefix for where
   =lsp-mode='s default keybindings will be added.
@@ -705,17 +722,19 @@ The =which-key= integration adds helpful descriptions of the various keys so you
 
   (use-package lsp-mode
     :commands (lsp lsp-deferred)
+    :hook (prog-mode . lsp-deferred) ;; simplifie la config 
     :hook (lsp-mode . efs/lsp-mode-setup)
     :init
-    (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
+    (setq lsp-keymap-prefix "C-c v")  ;; Or 'C-l', 's-l'
     :config
     (lsp-enable-which-key-integration t))
 
 #+end_src
 
 **** lsp-ui
-
-[[https://emacs-lsp.github.io/lsp-ui/][lsp-ui]] is a set of UI enhancements built on top of =lsp-mode= which make Emacs feel even more like an IDE.  Check out the screenshots on the =lsp-ui= homepage (linked at the beginning of this paragraph) to see examples of what it can do.
+[[https://emacs-lsp.github.io/lsp-ui/][lsp-ui]] is a set of UI enhancements built on top of =lsp-mode= which make Emacs feel even more like an IDE.
+Check out the screenshots on the =lsp-ui= homepage (linked at the beginning of this paragraph)
+to see examples of what it can do.
 
 #+begin_src emacs-lisp
 
@@ -774,7 +793,47 @@ This is a basic configuration for the TypeScript language so that =.ts= files ac
 
 #+end_src
 
-*Important note!*  For =lsp-mode= to work with TypeScript (and JavaScript) you will need to install a language server on your machine.  If you have Node.js installed, the easiest way to do that is by running the following command:
+*Important note!*
+For =lsp-mode= to work with TypeScript (and JavaScript) you will need to install a
+language server on your machine.
+If you have Node.js installed, the easiest way to do that is by running the following command:
+
+#+begin_src shell :tangle no
+
+npm install -g typescript-language-server typescript
+
+#+end_src
+
+This will install the [[https://github.com/theia-ide/typescript-language-server][typescript-language-server]] and the TypeScript compiler package.
+
+*** JavaScript
+
+/J'ai modifié le merdier de type script/
+This is a basic configuration for the TypeScript language so that =.ts= files activate =typescript-mode= when opened.
+We're also adding a hook to =typescript-mode-hook= to call =lsp-deferred= so that we activate =lsp-mode= to get
+LSP features every time we edit TypeScript code.
+https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript/
+
+#+begin_src emacs-lisp
+
+  (use-package rjsx-mode
+    :mode "\\.ts\\'"
+    :hook (rjsx-mode . lsp-deferred)
+    :config
+    (setq rjsx-indent-level 2))
+  (use-package js2-mode
+    :mode "\\.ts\\'"
+    :hook (js2-mode . lsp-deferred)
+    :config
+    (setq js2-indent-level 2))
+
+
+#+end_src
+
+*Important note!*
+For =lsp-mode= to work with TypeScript (and JavaScript) you will need to install a
+language server on your machine.
+If you have Node.js installed, the easiest way to do that is by running the following command:
 
 #+begin_src shell :tangle no
 
@@ -788,18 +847,21 @@ This will install the [[https://github.com/theia-ide/typescript-language-server]
 :PROPERTIES:
 :ID:       4a0722fc-bfe5-4817-bb4e-becfa639fe16
 :END:
-
-We use =lsp-mode= and =dap-mode= to provide a more complete development environment for Python in Emacs.  Check out [[https://emacs-lsp.github.io/lsp-mode/page/lsp-pyls/][the =pyls= configuration]] in the =lsp-mode= documentation for more details.
+**** [#A] Explications 
+We use =lsp-mode= and =dap-mode= to provide a more complete development environment for Python in Emacs.
+Check out [[https://emacs-lsp.github.io/lsp-mode/page/lsp-pyls/][the pyls configuration]] in the =lsp-mode= documentation for more details.
 
 Make sure you have the =pyls= language server installed before trying =lsp-mode=!
 
 #+begin_src sh :tangle no
 
-pip install --user "python-language-server[all]"
+  pip install --user "python-language-server[all]"
+  pip install debugpy # permet de debuguer
 
 #+end_src
 
-There are a number of other language servers for Python so if you find that =pyls= doesn't work for you, consult the =lsp-mode= [[https://emacs-lsp.github.io/lsp-mode/page/languages/][language configuration documentation]] to try the others!
+There are a number of other language servers for Python so if you find that =pyls= doesn't work for you,
+consult the =lsp-mode= [[https://emacs-lsp.github.io/lsp-mode/page/languages/][language configuration documentation]] to try the others!
 
 #+begin_src emacs-lisp
 
@@ -807,20 +869,16 @@ There are a number of other language servers for Python so if you find that =pyl
     :ensure t
     :hook (python-mode . lsp-deferred)
     :custom
-    ;; NOTE: Set these if Python 3 is called "python3" on your system!
-    ;; (python-shell-interpreter "python3")
-    ;; (dap-python-executable "python3")
-    (dap-python-debugger 'debugpy)
-    :config
-    (require 'dap-python))
+    (python-shell-interpreter "python"))
+    ;;(dap-python-executable "python"))
 
+  ;;(require 'dap-python)
+  ;;(setq dap-python-debugger 'debugpy)
 
+(use-package realgud :ensure t)
 #+end_src
 
-**** environnements virtuels emacs python 2024
-:PROPERTIES:
-:ID:       4315575d-5197-4f85-9f41-81089b99c44b
-:END:
+**** environnements virtuels  
 You can use the pyvenv package to use =virtualenv= environments in Emacs.
 The _pyvenv-activate_ command should configure Emacs to cause =lsp-mode= and
 =dap-mode= to use the virtual environment when they are loaded,
@@ -837,9 +895,58 @@ just select the path to your virtual environment before loading your project.
 #+end_src
 
 penser à faire *activate puis sélectionner le merdier* 
+**** restart python 
+    #+begin_src emacs-lisp 
+      ;; On rajoute un hook pour avoir le raccourci C-c ! pour changer d'interpreteur python:
+
+      (defun restart-python ()
+	(interactive)
+	(kill-buffer "*Python*")
+	(run-python nil nil nil))
+
+      (add-hook 'python-mode-hook
+		(lambda ()
+		  (local-set-key (kbd "M-p") 'restart-python)))
+    #+end_src
+
+
+**** indenting de merde 
+TabError: inconsistent use of tabs and spaces in indentation, comment gérer ce problème proprement dans emacs?
+
+Le TabError est une erreur courante en programmation,
+particulièrement en Python,
+qui se produit lorsqu'il y a un mélange incohérent de tabulations et d'espaces pour l'indentation du code.
+
+***** Solutions dans Emacs
+****** Utiliser uniquement des espaces
+- Configurer Emacs pour utiliser des espaces au lieu des tabulations :
+  #+BEGIN_SRC emacs-lisp
+  (setq-default indent-tabs-mode nil)
+  #+END_SRC
+
+****** Configurer l'indentation par langage
+- Pour Python, utiliser python-mode et configurer l'indentation :
+  #+BEGIN_SRC emacs-lisp
+  (setq python-indent-offset 4)
+  #+END_SRC
+
+****** Utiliser un outil de formatage automatique
+- Intégrer des outils comme Black pour Python :
+  #+BEGIN_SRC emacs-lisp
+  (use-package python-black
+    :demand t
+    :after python
+    :hook (python-mode . python-black-on-save-mode))
+  #+END_SRC
+
+***** Conclusion
+En adoptant ces pratiques dans Emacs, vous pouvez efficacement prévenir et résoudre les problèmes d'indentation incohérente, évitant ainsi les TabErrors et améliorant la lisibilité de votre code.
+
 ** Company Mode
 
-[[http://company-mode.github.io/][Company Mode]] provides a nicer in-buffer completion interface than =completion-at-point= which is more reminiscent of what you would expect from an IDE.  We add a simple configuration to make the keybindings a little more useful (=TAB= now completes the selection and initiates completion at the current location if needed).
+[[http://company-mode.github.io/][Company Mode]] provides a nicer in-buffer completion interface than =completion-at-point=
+which is more reminiscent of what you would expect from an IDE.
+We add a simple configuration to make the keybindings a little more useful (=TAB= now completes the selection and initiates completion at the current location if needed).
 
 We also use [[https://github.com/sebastiencs/company-box][company-box]] to further enhance the look of the completions with icons and better overall presentation.
 
@@ -848,6 +955,7 @@ We also use [[https://github.com/sebastiencs/company-box][company-box]] to furth
   (use-package company
     :after lsp-mode
     :hook (lsp-mode . company-mode)
+    :hook (shell . company-mode)
     :bind (:map company-active-map
            ("<tab>" . company-complete-selection))
           (:map lsp-mode-map
@@ -858,7 +966,7 @@ We also use [[https://github.com/sebastiencs/company-box][company-box]] to furth
 
   (use-package company-box
     :hook (company-mode . company-box-mode))
-
+  
 #+end_src
 
 ** Projectile
@@ -927,8 +1035,9 @@ Emacs' built in commenting functionality =comment-dwim= (usually bound to =M-;=)
 
 #+begin_src emacs-lisp
 
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
+  (use-package rainbow-delimiters
+    :ensure t 
+    :hook (prog-mode . rainbow-delimiters-mode))
 
 #+end_src
 
@@ -960,42 +1069,12 @@ This is an example of configuring another non-Emacs application using org-mode. 
   (setq fountain-export-path "/home/kim/org-roam/fountain/"))
 #+end_src
 
-** tangling + chmod 
-
-#+begin_src emacs-lisp 
-(defun my-org-babel-tangle-chmod ()
-  "Tangle and chmod +x"
-  (interactive)
-  (org-babel-tangle)
-  (dolist (file (org-babel-tangle))
-    ;; On affiche le fichier
-    (message file)
-    ;; On fait un chmod +x sur le fichier
-    ;; On affiche la commande shell:
-    (shell-command (format "chmod +x %s" file))
-    (message (format "chmod +x %s" file))))
-
-
-;; On remplace la fonction org-babel-tangle par notre fonction
-
-
-(add-hook 'org-mode-hook
-	  (lambda ()
-	    (local-set-key (kbd "C-c C-v C-t") 'my-org-babel-tangle-chmod))
-
-	  (lambda ()
-	    (local-set-key (kbd "C-c C-,") 'org-insert-structure-template))
-	  )
-
-;; On peut maintenant faire un C-c C-v t pour tangle et rendre exécutable le fichier source
-#+end_src
-
 ** [[https://systemcrafters.net/emacs-from-scratch/the-best-default-settings/][nice default settings]]
 #+begin_src emacs-lisp
   (recentf-mode 1)
   (global-set-key (kbd "C-c F") 'recentf) ;;POWERFUL
   (setq history-length 25)
-  (savehist-mode 1)
+  ;;(savehist-mode 1)
   ;; Remember and restore the last cursor location of opened files
   (save-place-mode 1)
   ;; Don't pop up UI dialogs when prompting
@@ -1030,3 +1109,258 @@ This is an example of configuring another non-Emacs application using org-mode. 
 
     (global-set-key (kbd "C-c c p") 'copy-file-path)
     #+end_src
+** Code
+*** uml
+#+begin_src emacs-lisp
+(setq org-plantuml-jar-path "~/plantuml/plantuml.jar")
+(setq plantuml-jar-path "~/plantuml/plantuml.jar")
+
+;; Activer PlantUML dans Org-mode
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((plantuml . t)))
+
+;; Installer plantuml-mode
+(use-package plantuml-mode
+  :ensure t
+  :config
+  (setq plantuml-default-exec-mode 'jar))
+#+end_src
+*** yasnippet
+#+begin_src emacs-lisp
+  (use-package yasnippet :ensure t)
+  (yas-global-mode 1)
+#+end_src
+*** indenting code blocks
+#+begin_src emacs-lisp
+(setq org-src-preserve-indentation t)
+#+end_src
+*** tangling + chmod 
+
+#+begin_src emacs-lisp 
+(defun my-org-babel-tangle-chmod ()
+  "Tangle and chmod +x"
+  (interactive)
+  (org-babel-tangle)
+  (dolist (file (org-babel-tangle))
+    ;; On affiche le fichier
+    (message file)
+    ;; On fait un chmod +x sur le fichier
+    ;; On affiche la commande shell:
+    (shell-command (format "chmod +x %s" file))
+    (message (format "chmod +x %s" file))))
+
+
+;; On remplace la fonction org-babel-tangle par notre fonction
+
+
+(add-hook 'org-mode-hook
+	  (lambda ()
+	    (local-set-key (kbd "C-c C-v C-t") 'my-org-babel-tangle-chmod))
+
+	  (lambda ()
+	    (local-set-key (kbd "C-c C-,") 'org-insert-structure-template))
+	  )
+
+;; On peut maintenant faire un C-c C-v t pour tangle et rendre exécutable le fichier source
+#+end_src
+
+** commandes interactives IA 
+[[id:0fcf6c62-c888-40b2-abe4-ca0602a6ecf8][PDF extractor python]]
+[[id:484051ee-461a-4289-abc3-9ede2a581eaf][emacs features IA]]
+**** convert org 
+#+begin_src emacs-lisp
+(defun convert-org-from-region ()
+  "Send the selected region to convert_org command and insert the result."
+  (interactive)
+  (let* ((start (if (region-active-p) (region-beginning) (point-min)))
+         (end (if (region-active-p) (region-end) (point-max)))
+         (text (buffer-substring-no-properties start end))
+         (result-buffer (generate-new-buffer "*convert-org-result*")))
+    (with-current-buffer result-buffer
+      (insert text)
+      (call-process-region (point-min) (point-max) "convert_org_local" t t nil))
+    (let ((result (with-current-buffer result-buffer
+                    (buffer-string))))
+      (kill-buffer result-buffer)
+      (delete-region start end)
+      (goto-char start)
+      (insert result))))
+
+;; (global-set-key (kbd "C-c u") 'make-uml-from-region)
+
+
+#+end_src
+
+**** make quiz 
+#+begin_src emacs-lisp
+(defun make-quiz-from-region ()
+  "Send the selected region to make_quiz command and insert the result."
+  (interactive)
+  (let* ((start (if (region-active-p) (region-beginning) (point-min)))
+         (end (if (region-active-p) (region-end) (point-max)))
+         (text (buffer-substring-no-properties start end))
+         (result-buffer (generate-new-buffer "*make-quiz-result*"))
+         (command (format "make_quiz_local \"%s\"" (shell-quote-argument text))))
+    (with-current-buffer result-buffer
+      (shell-command command (current-buffer)))
+    (let ((result (with-current-buffer result-buffer
+                    (buffer-string))))
+      (kill-buffer result-buffer)
+      (delete-region start end)
+      (goto-char start)
+      (insert result))))
+
+;; (global-set-key (kbd "C-c u") 'make-uml-from-region)
+
+
+#+end_src
+
+**** code blocks 
+#+begin_src emacs-lisp
+(defun ai-blocks-to-org ()
+  "Convert AI-style code blocks to Org-mode code blocks in the current buffer."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "```\\({[^}]+}\\|[^[:space:]]+\\)?\\([[:space:]]*\n\\)\\(\\(?:.*\n\\)*?\\)```" nil t)
+      (let ((lang (match-string 1))
+            (code (match-string 3)))
+        (replace-match (concat "#+begin_src " (or lang "") "\n"
+                               code
+                               "#+end_src"))))))
+#+end_src
+
+**** Execute request 
+#+begin_src emacs-lisp
+(defun ai-request ()
+  "Send the selected region to ai_request command and insert the result."
+  (interactive)
+  (let* ((start (if (region-active-p) (region-beginning) (point-min)))
+         (end (if (region-active-p) (region-end) (point-max)))
+         (text (buffer-substring-no-properties start end))
+         (result-buffer (generate-new-buffer "*make-quiz-result*"))
+         (command (format "ai_request_local \"%s\"" (shell-quote-argument text))))
+    (with-current-buffer result-buffer
+      (shell-command command (current-buffer)))
+    (let ((result (with-current-buffer result-buffer
+                    (buffer-string))))
+      (kill-buffer result-buffer)
+      (delete-region start end)
+      (goto-char start)
+      (insert result))))
+
+;; (global-set-key (kbd "C-c u") 'make-uml-from-region)
+
+#+end_src
+
+**** explain
+#+begin_src emacs-lisp
+(defun ai-explain ()
+  "Send the selected region to ai_explain command and insert the result."
+  (interactive)
+  
+  ;; Détermine la région à traiter (sélection ou buffer entier)
+  (let* ((start (if (region-active-p) (region-beginning) (point-min)))
+         (end (if (region-active-p) (region-end) (point-max)))
+         
+         ;; Extrait le texte de la région
+         (text (buffer-substring-no-properties start end))
+         
+         ;; Crée un nouveau buffer pour le résultat
+         (result-buffer (generate-new-buffer "*make-quiz-result*"))
+         
+         ;; Prépare la commande shell à exécuter
+         (command (format "ai_explain_local \"%s\"" (shell-quote-argument text))))
+    
+    ;; Exécute la commande shell et stocke le résultat dans result-buffer
+    (with-current-buffer result-buffer
+      (shell-command command (current-buffer)))))
+
+#+end_src
+
+**** insert
+insère une demande à l'ia sans context
+#+begin_src emacs-lisp
+;; Définition de la fonction ai-request
+(defun ai-insert ()
+  "Send the selected region to ai_request command and insert the result."
+  (interactive)
+  ;; Utilisation de let* pour définir des variables locales
+  (let* ((start (if (region-active-p) (region-beginning) (point-min)))
+         (end (if (region-active-p) (region-end) (point-max)))
+         (text (buffer-substring-no-properties start end))
+
+         (result-buffer (generate-new-buffer "*make-quiz-result*"))
+         ;; Construire la commande shell à exécuter
+         (command (format "ai_insert_local" )))
+    
+    ;; Exécuter la commande shell dans le buffer de résultat
+    (with-current-buffer result-buffer
+      (shell-command command (current-buffer)))
+    
+    ;; Traiter le résultat
+    (let ((result (with-current-buffer result-buffer
+                    (buffer-string))))
+      ;; Nettoyer : supprimer le buffer de résultat
+      (kill-buffer result-buffer)
+      ;; Remplacer la région sélectionnée par le résultat
+      (delete-region start end)
+      (goto-char start)
+      (insert result))))
+
+;; (global-set-key (kbd "C-c u") 'make-uml-from-region)
+
+#+end_src
+
+**** multi context
+#+begin_src emacs-lisp
+
+(defun ai-multicont ()
+  "Send the selected region to ai_multicont command and display the result in a new buffer."
+  (interactive)
+  (let* ((start (if (region-active-p) (region-beginning) (point-min)))
+         (end (if (region-active-p) (region-end) (point-max)))
+         (text (buffer-substring-no-properties start end))
+         (result-buffer (generate-new-buffer "*ai-multicont-result*"))
+         (command (format "screen -dmS jaj ai_multi_context \"%s\"" (shell-quote-argument text))))
+    (with-current-buffer result-buffer
+      (shell-command command (current-buffer)))
+    (switch-to-buffer-other-window result-buffer)))
+;; (global-set-key (kbd "C-c u") 'make-uml-from-region)
+
+#+end_src
+
+**** ai export 
+
+#+begin_src emacs-lisp
+(defun my-org-roam-capture-with-timestamp ()
+  (let* ((time (format-time-string "%Y-%m-%d-%H%M%S"))
+         (file-name (concat time ".org"))
+         (title (concat "Chat du " (format-time-string "%Y-%m-%d à %H:%M:%S : TITRE")))
+         (chat-content (with-temp-buffer
+                         (insert-file-contents "/tmp/chat_nudger")
+                         (buffer-string))))
+    (org-roam-capture- :node (org-roam-node-create :title title)
+                       :templates '(("d" "default" plain
+                                     "%?\
+\* Contenu du chat
+
+
+\
+
+"
+                                     :if-new (file+head "${slug}.org"
+                                                        "#+title: ${title}\n")
+                                     :unnarrowed t))
+                       :props `(:file-name ,file-name))
+    (with-current-buffer (org-capture-get :buffer)
+      (goto-char (point-max))
+      (insert chat-content))))
+
+(defun ai-export ()
+  (interactive)
+  (my-org-roam-capture-with-timestamp))
+
+#+end_src
+
